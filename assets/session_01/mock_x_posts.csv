@@ -1,0 +1,13 @@
+post_id,user_handle,posted_at,likes,text
+1,econ_lab,2026-04-01 09:10,12,"Started cleaning the survey data for senior thesis."
+2,macro_note,2026-04-01 10:40,8,"Need to merge city code table before regression."
+3,data_runner,2026-04-01 13:05,15,"Python script finished. Next step is summary stats."
+4,econ_lab,2026-04-02 08:55,,"Forgot to document the source URL for the dataset."
+5,policy_watch,2026-04-02 11:30,23,"Scatter plot first, regression later."
+6,data_runner,2026-04-02 14:12,19,"Trying to estimate fixed effects with panel data."
+7,econ_lab,2026-04-03 09:45,5,"Need cleaner variable names before sharing code."
+8,macro_note,2026-04-03 12:10,17,"Summary table updated after dropping missing values."
+9,policy_watch,2026-04-03 15:20,11,"Regression output looks odd. Check the raw file again."
+10,data_runner,2026-04-04 10:05,29,"Downloaded public posts for text analysis practice."
+11,econ_lab,2026-04-04 12:25,9,"Use Python to save figures, not manual screenshots."
+12,policy_watch,2026-04-04 18:00,14,"Document each transformation before writing the paper."

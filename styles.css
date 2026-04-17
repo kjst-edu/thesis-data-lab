@@ -1,0 +1,53 @@
+body {
+  line-height: 1.75;
+}
+
+.quarto-title-block {
+  margin-bottom: 2.75rem;
+}
+
+.quarto-title-block .title {
+  margin-bottom: 1.25rem;
+}
+
+.content {
+  max-width: 860px;
+}
+
+.main-content {
+  padding-top: 1.25rem;
+}
+
+h2,
+h3,
+h4 {
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+}
+
+.content > section:first-of-type > h2 {
+  margin-top: 3rem;
+}
+
+p,
+ol,
+ul,
+table {
+  margin-bottom: 1.1rem;
+}
+
+li {
+  margin-bottom: 0.3rem;
+}
+
+table {
+  margin-top: 1rem;
+}
+
+.sidebar nav[role="doc-toc"] {
+  padding-top: 1rem;
+}
+
+.sidebar-item {
+  margin-bottom: 0.2rem;
+}
