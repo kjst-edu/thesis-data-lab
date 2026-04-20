@@ -2,46 +2,172 @@
 title: "第1回 卒論プロジェクトを開始する"
 ---
 
+[スクリプト](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_01)
+
 ## この回のねらい
 
 卒論の分析を始める前に、作業の土台を整えます。特に、次の3点を確認します。
 
-1. 主なファイルを1つのフォルダにまとめること
-2. 変更履歴が残る形で作業すること
-3. 生データの置き場所をコードに直書きしないこと
+1.  主なファイルを1つのフォルダにまとめること
+2.  変更履歴が残る形で作業すること
+3.  生データの置き場所をコードに直書きしないこと
 
+## アカウント
 
-## 前提
+授業で使うサービスのアカウントを作っておいてください。
 
-この授業では次のツールを使います。事前にインストールしておいてください。
+**必須**
 
-| ツール | 用途 | Mac | Windows |
-|--------|------|-----|---------|
-| [GitHub CLI (`gh`)](https://cli.github.com/) | GitHub リポジトリの作成・操作 | `brew install gh` | `winget install -e --id GitHub.cli` |
-| [GitHub Desktop](https://desktop.github.com/) | commit・push などの日常操作（GUI） | [公式サイト](https://desktop.github.com/)からダウンロード | [公式サイト](https://desktop.github.com/)からダウンロード |
-| [uv](https://docs.astral.sh/uv/) | Python のバージョン管理と依存関係管理 | `brew install uv` | `winget install -e --id astral-sh.uv` |
+- [**GitHub**](https://github.com/) — バージョン管理とコードの共有に使います。まだ持っていない場合は作成してください。
+  - [**GitHub Student Developer Pack**](https://education.github.com/pack) — 学校のメールアドレスと学生証の両方で申請します。承認されると GitHub Copilot Student が無料で使えるようになります。承認には数日かかる場合があります。
 
+**あると便利**
+
+- [**Google**](https://accounts.google.com/) — AI ツール（Gemini）や各種サービスで使います。多くの人はすでに持っています。
+- [**Kaggle**](https://www.kaggle.com/) — データセットの公開・検索ができるプラットフォームです。コンペに参加しなくても、公開データを卒論の題材探しや練習に使えます。
+- [**AtCoder**](https://atcoder.jp/) — 競技プログラミングのサービスです。Python の練習問題として活用できます。
+- [**Paiza**](https://paiza.jp/) — 日本語のプログラミング学習サービスです。スキルチェックやドリルで基礎を固めるのに使えます。
+
+## 環境
+
+この授業で使用する各種ツールのインストールにはパッケージマネージャーを使います。パッケージマネージャーとは、ソフトウェアのインストール・アップグレード・削除をコマンド1つで管理できるツールです。この授業では以下のものを推奨します。
+
+**パッケージマネージャー**:
+
+- (Mac) [Homebrew](https://brew.sh)
+  - 公式サイトの手順に従ってインストールしてください。Homebrew のインストール時に Git も一緒に入ります。
+- (Windows) [winget](https://learn.microsoft.com/ja-jp/windows/package-manager/winget/)
+  - winget は Windows に標準で入っています。
+
+**使用ツールと役割**:
+
+- [**Git**](https://git-scm.com/) — バージョン管理。変更履歴を残し、いつでも以前の状態に戻せる
+- [**VS Code**](https://code.visualstudio.com/) — コードエディタ
+- [**GitHub CLI (`gh`)**](https://cli.github.com/) — GitHub リポジトリの作成・操作をターミナルから行う
+- [**GitHub Desktop**](https://desktop.github.com/) — commit・push などの日常操作を GUI で行う
+- [**uv**](https://docs.astral.sh/uv/) — Python のバージョン管理と依存パッケージの管理
+
+@tbl-tools-install を参考にインストールしてください。
+
+:::: {#tbl-tools-install}
+::: {.panel-tabset group="os"}
+## Mac
+
+| ツール | コマンド | インストール |
+|:-------------------|:----------------------|:-----------------------------|
+| [Git](https://git-scm.com/) | `git` | Homebrew インストール時に導入済み |
+| [VS Code](https://code.visualstudio.com/) | `code` | `brew install --cask visual-studio-code` |
+| [GitHub CLI (`gh`)](https://cli.github.com/) | `gh` | `brew install gh` |
+| [GitHub Desktop](https://desktop.github.com/) | `github` | `brew install --cask github` |
+| [uv](https://docs.astral.sh/uv/) | `uv` | `brew install uv` |
+
+## Windows
+
+| ツール | コマンド | インストール |
+|:-------------------|:----------------------|:-----------------------------|
+| [Git](https://git-scm.com/) | `git` | `winget install -e --id Git.Git` |
+| [VS Code](https://code.visualstudio.com/) | `code` | `winget install -e --id Microsoft.VisualStudioCode` |
+| [GitHub CLI (`gh`)](https://cli.github.com/) | `gh` | `winget install -e --id GitHub.cli` |
+| [GitHub Desktop](https://desktop.github.com/) | `github` | `winget install -e --id GitHub.GitHubDesktop` |
+| [uv](https://docs.astral.sh/uv/) | `uv` | `winget install -e --id astral-sh.uv` |
+:::
+
+授業で使うツールとインストールコマンド
+::::
+
+::: callout-note
+uv の公式ドキュメントにはスクリプトによるインストール方法も載っています。この授業では他のツールと統一して winget を使います。
+:::
+
+::: callout-note
 `gh` は初回に `gh auth login` で認証が必要です。授業中に一度だけ行えば大丈夫です。
+:::
 
+### アップデート {.unnumbered}
 
-## 授業で話すこと
+ソフトウェアのアップグレードは以下のコマンドで行います。
 
-### 1. ひな型からプロジェクトを作る
+:::: {#tbl-tools-upgrade}
+::: {.panel-tabset group="os"}
+## Mac
 
-卒論では、後から図表を作り直したり変数定義を修正したりすることがよくあります。そのとき、どのファイルがどこにあるかが分からないと自分でも追えなくなります。最初にフォルダの構成をそろえておくと、こうした混乱を防ぎやすくなります。
+| ツール            | アップグレード                           |
+|:------------------|:-----------------------------------------|
+| Git               | `brew upgrade git`                       |
+| VS Code           | `brew upgrade --cask visual-studio-code` |
+| GitHub CLI (`gh`) | `brew upgrade gh`                        |
+| GitHub Desktop    | `brew upgrade --cask github`             |
+| uv                | `brew upgrade uv`                        |
 
-この授業では、あらかじめ用意したテンプレートから GitHub リポジトリを作り、それを自分の PC にクローンする手順でそろえます。
+## Windows
 
-```bash
+| ツール            | アップグレード                                      |
+|:------------------|:----------------------------------------------------|
+| Git               | `winget upgrade -e --id Git.Git`                    |
+| VS Code           | `winget upgrade -e --id Microsoft.VisualStudioCode` |
+| GitHub CLI (`gh`) | `winget upgrade -e --id GitHub.cli`                 |
+| GitHub Desktop    | `winget upgrade -e --id GitHub.GitHubDesktop`       |
+| uv                | `winget upgrade -e --id astral-sh.uv`               |
+:::
+
+ツールのアップグレードコマンド
+::::
+
+## プロジェクトの構成
+
+卒論を構成するファイル（コード・データ・図表・本文）は、なるべく1つのフォルダにまとめることを強く推奨します（生データは例外、後述）。また、プロジェクトごとにフォルダ構成を変えると、どこに何があるかを毎回考え直す手間が生まれます。大体いつも同じ構成にしておくことで、余計な思考を省けます。
+
+### 最小フォルダ構成
+
+``` text
+📁 my-thesis-project/
+├─ 📄 thesis.docx      # 卒論本文
+├─ 📁 scripts/         # Python スクリプト（加工コードも含む）
+├─ 📁 data/            # 加工済みデータ・出所メモ
+├─ 📁 output/          # 図表出力
+├─ 📄 .env　　　　　     # 環境変数
+├─ 📄 .gitignore
+└─ 📄 README.md
+```
+
+`data/` には分析に使うデータファイルを置きます。生データを加工して作った場合は、その変換スクリプトを `scripts/` に置きます。生データ自体は `data/` に置かず別管理にします（後述）。
+
+これは最小構成なので、必要に応じてフォルダを追加してかまいません。たとえば、PowerPoint で作った図や手書きのメモを `figures/` にまとめる、といった使い方が考えられます。
+
+::: callout-important
+## データの来歴を残す
+
+`data/` のファイルがどこから来たかを後から追えるようにしておくことが重要です。
+
+- **スクリプトで変換した場合** — 変換コードを `scripts/` に残す
+- **手作業で変換した場合**（Excel を手動で整形するなど）— 作業手順を `data/` 内のメモに残す
+- **自分で入力したデータ** — 生データと分析用データが同一なので変換手順は不要。入力方法や変数の定義をメモしておく
+:::
+
+スクリプトで変換する場合の構成は、[Cookie Cutter Data Science](https://cookiecutter-data-science.drivendata.org/) の考え方を参考にしています。機械学習などより本格的なプロジェクトに取り組む場合は、そちらの構成も選択肢になります。
+
+### GitHub テンプレートから始める
+
+上の最小構成をそのまま使えるよう [GitHub テンプレート](https://github.com/kjst-edu/thesis-starter) を用意しました。コマンド操作で、上記の構成を持つリポジトリを作ることができます。
+
+まず、プロジェクトを置きたいフォルダに移動してからコマンドを実行します。
+
+``` bash
+cd ~/repos   # 好きな場所に変えてください
+```
+
+``` bash
 gh repo create my-thesis-project \
   --private \
   --template kjst-edu/thesis-starter \
   --clone
 ```
 
+`my-thesis-project` の部分はリポジトリ名になります。自分の GitHub アカウント内で重複しない名前にしてください（例: `urban-wage-thesis`）。
+
 このコマンド1つで、次の構成を持つフォルダが手元にできます。
 
-```text
+``` text
 📁 my-thesis-project/
 ├─ 📄 thesis.docx          # 卒論本文テンプレート
 ├─ 📄 report.docx          # レポート本文テンプレート
@@ -55,18 +181,39 @@ gh repo create my-thesis-project \
 
 `thesis.docx` と `report.docx` は使う方だけ残して、もう片方は削除してかまいません。
 
+::: callout-warning
+## クラウド同期フォルダに置かない
 
-### 2. 環境構築をそろえる
+Mac の `書類` は iCloud Drive、Windows の `ドキュメント` は OneDrive で同期されている場合があります。クラウド同期フォルダ内に Git リポジトリを置くと、ファイルのロックや競合が起きることがあります。`~/repos` や `C:\repos` のように同期の対象外となるフォルダを使うことをおすすめします。
+:::
 
-Python の実行と依存関係の管理には `uv` を使います。`pip install` や `python` コマンドを直接使う代わりに、次のコマンドを使います。
+クローンが完了したら、プロジェクトフォルダに移動してエディタを開きます。
 
-| やりたいこと | コマンド |
-|-------------|---------|
-| 依存パッケージをインストール | `uv sync` |
-| スクリプトを実行 | `uv run scripts/...` |
-| パッケージを追加 | `uv add パッケージ名` |
+``` bash
+cd my-thesis-project
+code .      # VS Code を現在のフォルダで開く
+github      # GitHub Desktop を開く
+```
 
-プロジェクトを作ったら、最初に `uv sync` を実行してください。これで `pyproject.toml` に書かれたパッケージがまとめてインストールされます。
+### Python 環境
+
+分析の再現性を確保するために、プロジェクトごとに専用の Python 環境（`.venv`）を用意します。「このプロジェクトではどのパッケージの何バージョンを使ったか」が `pyproject.toml` に記録されるため、後から同じ環境を再構築できます。
+
+テンプレートをクローンした場合は `pyproject.toml` がすでに入っているので、プロジェクトフォルダで `uv sync` を実行するだけで環境が整います。
+
+```bash
+uv sync
+```
+
+ゼロから始める場合は `uv init` で `pyproject.toml` を生成してから `uv sync` を実行します。
+
+よく使うコマンドは次の通りです。
+
+| やりたいこと                 | コマンド              |
+|------------------------------|-----------------------|
+| 環境をセットアップ           | `uv sync`             |
+| スクリプトを実行             | `uv run scripts/...`  |
+| パッケージを追加             | `uv add パッケージ名` |
 
 Jupyter を使いたい場合は、必要になった時点で追加すれば大丈夫です。
 
@@ -74,8 +221,7 @@ Jupyter を使いたい場合は、必要になった時点で追加すれば大
 uv add jupyter ipykernel
 ```
 
-
-### 3. 変更履歴を残す
+### バージョン管理
 
 GitHub を使う理由は主に2つあります。
 
@@ -84,24 +230,11 @@ GitHub を使う理由は主に2つあります。
 
 日常の commit・push には GitHub Desktop を使ってかまいません。ここで大事なのは、ツールの使い方を完璧にすることではなく、「作業の区切りごとに commit する」習慣をつけることです。
 
-
-### 4. 生データの置き場所を分ける
+## 生データの置き場所を分ける
 
 卒論で扱うデータには、公開データもあれば、利用規約がある個票データもあります。いずれの場合も、生データをこのフォルダの外に置ける仕組みにしておくと安全です。
 
 この授業では、生データの保存先を `.env` というファイルに書きます。`.env` は commit しません。共有するのは `.env.example`（雛形）だけにします。
-
-`.env.example`（リポジトリに入る）:
-
-```env
-RAW_DATA_DIR=
-```
-
-`.env`（各自の PC にだけ置く）:
-
-```env
-RAW_DATA_DIR=/Users/yourname/Data/my-thesis-raw
-```
 
 この方法には次の利点があります。
 
@@ -111,50 +244,148 @@ RAW_DATA_DIR=/Users/yourname/Data/my-thesis-raw
 
 `.env` のほかに、生データそのものと利用規約上アップロードできないデータも commit しません。
 
+### 手順
 
-### 5. スクリプトを1本動かしてみる
+**1. 生データ用フォルダを作る**
 
-環境構築だけで終わると、この回で何をしたのかが見えにくくなります。そこで、練習用の疑似データを使って、簡単なデータ整理の流れを実際に動かしてみます。
+プロジェクトフォルダの外に、生データを置くフォルダを作ります。場所と名前は自由です。
 
-```bash
-uv run scripts/session_01/project_structure_check.py
-uv run scripts/session_01/clean_mock_posts.py
+::: {.panel-tabset group="os"}
+## Mac
+
+``` bash
+mkdir -p ~/Data/my-thesis-raw
 ```
 
-`clean_mock_posts.py` では次のことを行っています。
+## Windows
 
-- 配布した CSV（疑似投稿データ）を読む
-- 日付を `datetime` に変換する
-- 欠損している `likes` を 0 で埋める
-- 投稿文の長さを計算する
-- 日ごとの投稿件数を集計する
-- 加工済みデータと集計結果を保存する
-- 簡単な棒グラフを保存する
+``` powershell
+mkdir C:\Data\my-thesis-raw
+```
+:::
 
-この回では分析結果の解釈よりも、「コードを走らせると `data/processed/` と `output/` にファイルが残る」ことを確認する方を優先します。
+**2. `.env.example` を `.env` にコピーする**
 
+プロジェクトフォルダのルートで実行します。
 
-## 自習に回すこと
+::: {.panel-tabset group="os"}
+## Mac
 
-### Word ファイルの扱い
+``` bash
+cp .env.example .env
+```
 
-`thesis.docx` と `report.docx` は、テンプレート配布と節目の保存のためにリポジトリに置いています。Word ファイルは Git の差分確認には向きませんが、図表は `output/` から本文に貼る流れにすると整理しやすくなります。
+## Windows
+
+``` powershell
+copy .env.example .env
+```
+:::
+
+**3. `.env` にパスを書く**
+
+VS Code で `.env` を開き、`RAW_DATA_DIR=` の右側に手順 1 で作ったフォルダのパスを書きます。
+
+::: {.panel-tabset group="os"}
+## Mac
+
+``` env
+RAW_DATA_DIR=/Users/yourname/Data/my-thesis-raw
+```
+
+## Windows
+
+``` env
+RAW_DATA_DIR=C:\Data\my-thesis-raw
+```
+:::
+
+`.env` は `.gitignore` に含まれているため、commit されません。
+
+::: callout-note
+## `.gitignore` とは
+
+`.gitignore` は「Git の管理対象から除外するファイル・フォルダ」を列挙したファイルです。ここに書かれたファイルは `git status` に表示されず、誤って commit することを防げます。テンプレートには `.env` や `__pycache__/` などがあらかじめ記載されています。
+:::
+
+## スクリプトを1本動かしてみる
+
+[Penn World Table](https://www.rug.nl/ggdc/productivity/pwt/)（PWT）は、各国の GDP・労働・資本などを長期にわたって収録したマクロ経済データセットです。整形済みで欠損も少なく、分析の練習に向いています。ここでは PWT を使って、実際にスクリプトを動かしてみましょう。
+
+実行前に、データとスクリプトの2つを準備します。
+
+**1. PWT データをダウンロードする**
+
+[Penn World Table の配布ページ](https://www.rug.nl/ggdc/productivity/pwt/) から Stata 形式（`pwt110.dta`）をダウンロードし、先ほど作った生データフォルダ（`RAW_DATA_DIR`）に置きます。
+
+**2. スクリプトをダウンロードする**
+
+[GitHub リポジトリ](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_01) から `explore_pwt.py` をダウンロードし、プロジェクトの `scripts/session_01/` フォルダに置きます。
+
+**3. スクリプトを実行する**
+
+スクリプトはターミナルから `uv run` で実行します。VS Code のエディタ右上に表示される再生ボタン（▶）は、`uv` で管理している Python 環境を使わないため、ここでは使いません。
+
+``` bash
+uv run scripts/session_01/01-prepare_pwt.py
+uv run scripts/session_01/02-plot_pwt.py
+```
+
+`01-prepare_pwt.py` では次のことを行っています。
+
+- PWT（`pwt110.dta`）を読む
+- 対象国・期間を絞り込む
+- 一人あたり実質 GDP を計算する
+- 加工済みデータを `data/` に保存する
+
+`02-plot_pwt.py` では次のことを行っています。
+
+- 加工済みデータを `data/` から読む
+- 折れ線グラフを作成して `output/` に保存する
+
+分析結果の解釈よりも、「スクリプトを走らせると `data/` と `output/` にファイルができる」流れをつかむことを優先します。
+
+## AI ツール
+
+### GitHub Copilot
+
+**GitHub Copilot**（無料プラン）は最近の VS Code に最初から組み込まれています。GitHub アカウントでサインインするだけで使えます。[GitHub Student Developer Pack](https://education.github.com/pack) の承認後は Copilot Student に切り替わります。Gemini、Claude など他のサービスのサブスクリプションも拡張機能経由で使えますが、ここでは割愛します。
+
+サインインは VS Code 左下のアカウントアイコン（人のシルエット）をクリックし、「GitHub でサインイン」を選んでください。ブラウザで認証すると完了します。
+
+VS Code に「CHAT」タブが表示されていますが、これは GitHub Copilot Chat のパネルです。「このエラーの意味は？」のように自然言語でコードについて質問できます（[公式ドキュメント](https://code.visualstudio.com/docs/copilot/chat/copilot-chat)）。よく使うショートカットを覚えておくと便利です。
+
+| 機能                             | Mac           | Windows        |
+|:---------------------------------|:--------------|:---------------|
+| チャットを開く                   | `Ctrl+Cmd+I`  | `Ctrl+Alt+I`   |
+| インラインチャット（エディタ内） | `Cmd+I`       | `Ctrl+I`       |
+| コマンドパレット                 | `Cmd+Shift+P` | `Ctrl+Shift+P` |
+
+: Copilot Chat のショートカット
+
+### AI との付き合い方
+
+::: callout-important
+## AI に制御されない
+
+AI が生成したコードをそのまま実行するだけでは、分析の中身を自分で説明できなくなります。
+
+- AI の出力を**読んで理解してから**実行する
+- 分析の目的と手順は**自分で判断**する
+- commit の前後で**差分を確認**する
+
+卒論の分析の責任は自分にあります。AI はあくまでツールです。
+:::
+
+テンプレートに含まれる `AGENTS.md` は、AI ツールに「このプロジェクトのルール」を伝えるファイルです。「コードは `scripts/` に置く」「`.env` は commit しない」といった指示が書かれており、AI が生成したコードでもこのルールが守られるよう機能します。自分のプロジェクトに合わせて書き足すことができます。
+
 
 ### AI に相談するときの最小ルール
 
-- 生データや規約付きデータを外部 AI に送らない
-- 規約が不明なら送らない
-- 相談するときは、列名・データ型・エラーメッセージ・自作コードに限定する
-- 実データの列構造だけ保って値をランダムに置き換えた疑似データを使う方法もある
-- 変更の前後で commit しやすい粒度で作業する
+- 生データや利用規約があるデータやAPIキーを外部 AI に送らない（規約が不明なら送らない）
+- AI に分析の判断をゆだねない — 何を調べるか・どう解釈するかは自分で決める
+- AI の出力は読んで理解してから使う
+
+疑似データを使いたい場合は、実データの列構造だけ残して値をランダムに置き換える方法があります。
 
 
-## 対応する実行例
-
-- `scripts/session_01/project_structure_check.py`
-- `scripts/session_01/clean_mock_posts.py`
-
-
-## メモ
-
-この回では理論よりも、分析を始める前の土台づくりを優先します。テンプレートから始めること、`.env` を commit しないこと、生データをリポジトリの外に置けることを特に強調します。

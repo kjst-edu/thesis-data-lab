@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: _site
+  output-dir: docs
   render:
     - "notes/**/*.qmd"
     - "!contribute/**"
@@ -8,7 +8,7 @@ project:
 website:
   title: "卒論準備のためのデータ分析ノート"
   navbar:
-    left:
+    right:
       - href: notes/index.qmd
         text: 講義ノート
   sidebar:
@@ -16,8 +16,8 @@ website:
     search: true
     contents:
       - href: notes/index.qmd
-        text: 一覧
-      - section: 各回
+        text: Home
+      - section: Notes
         contents:
           - href: notes/sessions/session-01.qmd
             text: 第1回
@@ -29,7 +29,7 @@ format:
     toc: true
     number-sections: true
     theme: flatly
-    css: styles.css
+    css: assets/styles.css
     lang: ja
 
 execute:

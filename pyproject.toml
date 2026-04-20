@@ -7,6 +7,7 @@ dependencies = [
     "linearmodels>=6.1",
     "matplotlib>=3.9",
     "pandas>=2.2",
+    "python-dotenv>=1.0",
     "scikit-learn>=1.5",
     "statsmodels>=0.14",
 ]
