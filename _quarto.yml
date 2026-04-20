@@ -21,8 +21,6 @@ website:
         contents:
           - href: notes/sessions/session-01.qmd
             text: 第1回
-          - href: notes/sessions/session-02.qmd
-            text: 第2回
 
 format:
   html:
