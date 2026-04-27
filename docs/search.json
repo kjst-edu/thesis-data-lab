@@ -4,42 +4,84 @@
     "href": "notes/sessions/session-02.html",
     "title": "第2回 記述統計・散布図・単回帰への入口",
     "section": "",
-    "text": "いきなり回帰分析に入らず、データの全体像をつかむ順序を確認する。卒論で最低限必要な「確認の流れ」を定着させる。"
+    "text": "スクリプト",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
     "objectID": "notes/sessions/session-02.html#この回のねらい",
     "href": "notes/sessions/session-02.html#この回のねらい",
     "title": "第2回 記述統計・散布図・単回帰への入口",
-    "section": "",
-    "text": "いきなり回帰分析に入らず、データの全体像をつかむ順序を確認する。卒論で最低限必要な「確認の流れ」を定着させる。"
+    "section": "1 この回のねらい",
+    "text": "1 この回のねらい\nいきなり回帰分析に入らず、データの全体像をつかむ順序を確認します。\n\n変数の意味と単位を確認する\n欠損値の出方を確認する\n記述統計量を出す\n図でデータの形を見る\n予想される符号やメカニズムを言葉で書き出す\n単回帰を実行し、図と事前の見立てに整合するかを確認する\n\n各ライブラリの細かい使い方は公式ドキュメントに譲ります。卒論では、自分が選んだ1つを使い込むほうが効率がよいです。",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
-    "objectID": "notes/sessions/session-02.html#授業で話すこと",
-    "href": "notes/sessions/session-02.html#授業で話すこと",
+    "objectID": "notes/sessions/session-02.html#使うデータ",
+    "href": "notes/sessions/session-02.html#使うデータ",
     "title": "第2回 記述統計・散布図・単回帰への入口",
-    "section": "2 授業で話すこと",
-    "text": "2 授業で話すこと\n\n2.1 1. まず変数の意味を確認する\n\n変数名だけで判断しない\n単位、欠損、集計単位を確認する\n目的変数と説明変数の候補を言葉で説明してみる\n\n\n\n2.2 2. 記述統計量を出す\n\n件数\n平均\n標準偏差\n最小値と最大値\n\n\n\n2.3 3. 先に図を描く\n\n散布図で関係の向きを見る\n外れ値がないかを見る\n直線で近似してよさそうかを考える\n\n\n\n2.4 4. 回帰の前に考えること\n\n予想される符号は何か\nその理由を言葉で説明できるか\n逆の符号が出るとすれば、どのような要因がありそうか\n\n\n\n2.5 5. その後に単回帰・重回帰へ進む\n\n推定結果だけを見るのではなく、図と整合的かを確認する\n係数の符号、桁、解釈可能性を確認する"
+    "section": "2 使うデータ",
+    "text": "2 使うデータ\n\nデータセット\n第1回で使った Penn World Table 11.0（PWT）を再利用し、ここでは 2023 年のクロスセクションを抽出して使います。第1回と同じく、生データ pwt110.dta は .env の RAW_DATA_DIR 配下に置かれている前提です。\n\n\n\n\n\n\n重要データの引用条件を確認する\n\n\n\nデータの配布元には引用条件が示されていることが多くあります。PWT の場合、配布ページに次の指示があります。\n\nAttribution requirement - When using these data (for whatever purpose), please make the following reference:\nFeenstra, Robert C., Robert Inklaar and Marcel P. Timmer (2015), “The Next Generation of the Penn World Table” American Economic Review, 105(10), 3150-3182, available for download at www.ggdc.net/pwt\n\n卒論で使うデータごとに「How to cite」「Terms of Use」「License」などの記載を探し、本文や参考文献に反映させます。\n\n\n\n\nスクリプトの取得\nスクリプト一式は配布リポジトリの scripts/session_02/ に置いてあります。最新版を取り込むには、自分のプロジェクトのルートで次を実行します。\n\nMacWindows\n\n\ngh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1 && cp -r _tdl/scripts/session_02 scripts/ && rm -rf _tdl\n\n\ngh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1; Copy-Item _tdl\\scripts\\session_02 scripts\\ -Recurse; Remove-Item _tdl -Recurse -Force\n\n\n\n\n\n加工データの作成\n加工コードは scripts/session_02/01-prepare_pwt_2023.py に分けてあります。中身は次のとおりです。\n# scripts/session_02/01-prepare_pwt_2023.py\n#\n# Penn World Table (PWT 11.0) から 2023 年のクロスセクションを抽出し、\n# data/pwt_2023.csv として保存する。欠損値の処理や派生変数の作成は\n# 行わず、後段の分析スクリプトに任せる。\n\nfrom pathlib import Path\nimport os\n\nimport pandas as pd\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nRAW_DATA_DIR = Path(os.environ[\"RAW_DATA_DIR\"])\n\nYEAR = 2023\nOUTPUT_DATA = Path(\"data/pwt_2023.csv\")\n\nUSE_COLS = [\n    \"countrycode\", \"country\", \"year\",\n    \"rgdpna\", \"pop\", \"emp\", \"avh\",\n    \"rnna\", \"hc\", \"labsh\",\n]\n\nraw = pd.read_stata(RAW_DATA_DIR / \"pwt110.dta\", columns=USE_COLS)\ndf = raw[raw[\"year\"] == YEAR].copy()\n\nOUTPUT_DATA.parent.mkdir(exist_ok=True)\ndf.to_csv(OUTPUT_DATA, index=False)\n実行します。\nuv run scripts/session_02/01-prepare_pwt_2023.py\nこれで data/pwt_2023.csv ができます。以降のチャンクはここから読み込みます。",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
+  },
+  {
+    "objectID": "notes/sessions/session-02.html#分析ステップ",
+    "href": "notes/sessions/session-02.html#分析ステップ",
+    "title": "第2回 記述統計・散布図・単回帰への入口",
+    "section": "3 分析ステップ",
+    "text": "3 分析ステップ\n\n[1] 変数の意味を確認する\nデータを読み込んだ直後に、各列が何を表しているかを言葉で説明できる状態にします。\n\n変数名だけで判断しない（income が世帯か個人か、税前か税後か、月か年かは名前ではわからない）\n単位を確認する（金額の通貨、人数か割合か、対数を取った後の値か）\n集計単位を確認する（個人・世帯・企業・地域・年など）\n目的変数と説明変数の候補を、データを見るより先に言葉で挙げる\n\nPWT の場合、変数の単位は配布ページの User Guide に書かれています。たとえば rgdpna は「100万 2017 USD」、pop・emp は「100万人」なので rgdpna / emp はそのまま「労働者1人あたり 2017 USD」になります。この単位確認を省くと、図の縦軸の桁が3桁ずれるといったミスが起きます。\n今回使う PWT の変数を表にまとめると、次のようになります。\n\n\n\n表 1: 今回使う PWT 11.0 の変数\n\n\n\n\n\n変数\n意味\n単位\n観測単位\n\n\n\n\ncountrycode\nISO 3文字国コード\n—\n国\n\n\ncountry\n国名\n—\n国\n\n\nyear\n暦年\n年\n—\n\n\nrgdpna\n実質 GDP（自国価格基準）\n100万 2017 USD\n国 × 年\n\n\npop\n人口\n100万人\n国 × 年\n\n\nemp\n就業者数\n100万人\n国 × 年\n\n\navh\n年間平均労働時間\n時間/人\n国 × 年\n\n\nrnna\n資本ストック（自国価格基準）\n100万 2017 USD\n国 × 年\n\n\nhc\n人的資本指数\n指数\n国 × 年\n\n\nlabsh\n労働分配率\n比率（0〜1）\n国 × 年\n\n\n\n\n\n\n卒論でも、扱うデータごとにこうした表を data/ フォルダにメモとして残しておくと、変数の取り違えや単位の勘違いを防げます。\n\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv(\"data/pwt_2023.csv\")\ndf.head()\n\n\n\n\n\n\n\n\ncountrycode\ncountry\nyear\nrgdpna\npop\nemp\navh\nrnna\nhc\nlabsh\n\n\n\n\n0\nABW\nAruba\n2023\n4555.60940\n0.107939\n0.048628\nNaN\n22632.262\nNaN\n0.645106\n\n\n1\nAGO\nAngola\n2023\n224326.30000\n36.749906\n17.260809\n2114.50\n700716.300\n1.544955\n0.223235\n\n\n2\nAIA\nAnguilla\n2023\n343.92654\n0.014410\nNaN\nNaN\n4179.440\nNaN\nNaN\n\n\n3\nALB\nAlbania\n2023\n45875.40600\n2.811655\n1.169550\n2151.97\n261367.620\n3.018473\n0.704890\n\n\n4\nARE\nUnited Arab Emirates\n2023\n792086.44000\n10.642081\n6.200720\n2514.45\n5951651.500\n3.304345\nNaN\n\n\n\n\n\n\n\n\n\n\n\n\n\nノート\n\n\n\n出所が明確なデータでも、変数の定義は配布元のドキュメントで必ず確認します。\n\n\n\n\n[2] 欠損値を確認する\n記述統計に進む前に、各列の欠損が何件あるかを確認しておきます。DataFrame.isna().sum() で列ごとの NaN 件数が出せます。\n\ndf.isna().sum()\n\ncountrycode     0\ncountry         0\nyear            0\nrgdpna          0\npop             0\nemp             6\navh            55\nrnna            5\nhc             40\nlabsh          45\ndtype: int64\n\n\nPWT 2023 年は 185 か国分の行がありますが、変数によっては欠損が多めです。\n\navh（年間平均労働時間）と labsh（労働分配率）は欠損が多く、3割前後の国で取れない\nhc（人的資本指数）は2割ほど欠損\nrgdpna、pop、emp、rnna は比較的そろっている\n\n欠損があるときの対処は何通りかありますが、どの選択肢にも独自の偏りが伴います。\n\n行を落とす — 最も単純。ただし PWT の場合、欠損は統計行政が弱い国・規模が小さい国・透明性が低い国に集中するので、残るサンプルが「規模が大きく統計が整った経済」に寄る偏りが入る\n対象年を変える — 2022年や2021年に切り替えると、最新値が間に合っていない国を拾えることがある。ただし「2023 年について論じたい」場合は別の話になる\n国ごとに利用可能な最新年を取る — サンプル数を保てるが、基準年が国でばらつく。構造的にゆっくり動く変数（人的資本など）に向く\n他のデータソースで補う — World Bank WDI、OECD、IMF などで埋める方法もある。出所ごとに定義や対象年が微妙に違うので、本文で出所と定義のズレを明示する\n\nどの選択肢を選んでも、サンプルは何らかの形で偏ります。卒論では「なぜその処理を選んだか」「結果として残ったのはどんな国か」を本文に書き残しておくと、後の議論や反例の説明がしやすくなります。\n今回は教材なので、最も単純な「行を落とす」を採ります。rgdpna、emp、rnna、hc のいずれかに欠損がある国を分析サンプルから外します（hc は後段のペアプロットで使うので一緒に落としておきます）。\nどの国が落ちるか見ておきます。\n\nmask = df[[\"rgdpna\", \"emp\", \"rnna\", \"hc\"]].isna().any(axis=1)\nprint(f\"落ちる国数: {mask.sum()}\")\ndf.loc[mask, [\"countrycode\", \"country\", \"pop\"]].sort_values(\"pop\")\n\n落ちる国数: 41\n\n\n\n\n\n\n\n\n\ncountrycode\ncountry\npop\n\n\n\n\n118\nMSR\nMontserrat\n0.004420\n\n\n2\nAIA\nAnguilla\n0.014410\n\n\n179\nVGB\nBritish Virgin Islands\n0.038985\n\n\n158\nSXM\nSint Maarten (Dutch part)\n0.042749\n\n\n161\nTCA\nTurks and Caicos Islands\n0.046198\n\n\n92\nKNA\nSaint Kitts and Nevis\n0.046758\n\n\n22\nBMU\nBermuda\n0.064698\n\n\n48\nDMA\nDominica\n0.066510\n\n\n43\nCYM\nCayman Islands\n0.073038\n\n\n7\nATG\nAntigua and Barbuda\n0.093316\n\n\n177\nVCT\nSt. Vincent and the Grenadines\n0.101323\n\n\n0\nABW\nAruba\n0.107939\n\n\n69\nGRD\nGrenada\n0.117081\n\n\n159\nSYC\nSeychelles\n0.127951\n\n\n98\nLCA\nSaint Lucia\n0.179285\n\n\n42\nCUW\nCuraçao\n0.185427\n\n\n152\nSTP\nSao Tome and Principe\n0.230871\n\n\n18\nBHS\nBahamas\n0.399440\n\n\n40\nCPV\nCabo Verde\n0.522331\n\n\n153\nSUR\nSuriname\n0.628886\n\n\n114\nMNE\nMontenegro\n0.633552\n\n\n27\nBTN\nBhutan\n0.786385\n\n\n71\nGUY\nGuyana\n0.826353\n\n\n39\nCOM\nComoros\n0.850387\n\n\n47\nDJI\nDjibouti\n1.152944\n\n\n110\nMKD\nNorth Macedonia\n1.831802\n\n\n67\nGNQ\nEquatorial Guinea\n1.847549\n\n\n66\nGNB\nGuinea-Bissau\n2.153339\n\n\n19\nBIH\nBosnia and Herzegovina\n3.185073\n\n\n62\nGEO\nGeorgia\n3.807492\n\n\n130\nOMN\nOman\n5.049269\n\n\n138\nPSE\nState of Palestine\n5.409202\n\n\n96\nLBN\nLebanon\n5.773493\n\n\n166\nTKM\nTurkmenistan\n7.364438\n\n\n20\nBLR\nBelarus\n9.115680\n\n\n10\nAZE\nAzerbaijan\n10.318207\n\n\n151\nSSD\nSouth Sudan\n11.483374\n\n\n64\nGIN\nGuinea\n14.405468\n\n\n149\nSOM\nSomalia\n18.358615\n\n\n162\nTCD\nChad\n19.319064\n\n\n176\nUZB\nUzbekistan\n35.652307\n\n\n\n\n\n\n\n\n\n\n\n\n\n警告\n\n\n\n欠損行を黙って落とすと、分析結果がどの国を見たものなのかが本文から消えます。何件除外したか、なぜ除外したかをメモに残しておきます。\n\n\n\n\n[3] 分析用の変数を作る\n欠損行を落として、対数と労働者あたり指標を計算します。\n\ndf = df.dropna(subset=[\"rgdpna\", \"emp\", \"rnna\", \"hc\"]).copy()\ndf[\"gdp_per_worker\"] = df[\"rgdpna\"] / df[\"emp\"]\ndf[\"capital_per_worker\"] = df[\"rnna\"] / df[\"emp\"]\ndf.shape\n\n(144, 12)\n\n\n\n\n[4] 記述統計量を出す\n件数・平均・標準偏差・最小値・最大値を確認します。pandas の DataFrame.describe() で一括して見られます。\n\ndf[[\"gdp_per_worker\", \"capital_per_worker\", \"hc\"]].describe().round(2)\n\n\n\n\n\n\n\n\ngdp_per_worker\ncapital_per_worker\nhc\n\n\n\n\ncount\n144.00\n144.00\n144.00\n\n\nmean\n56478.87\n276027.16\n2.78\n\n\nstd\n47501.73\n259272.46\n0.68\n\n\nmin\n346.33\n4659.49\n1.26\n\n\n25%\n17115.44\n72661.12\n2.17\n\n\n50%\n41057.13\n180214.77\n2.86\n\n\n75%\n85075.81\n462687.72\n3.32\n\n\nmax\n267579.16\n1356592.48\n3.99\n\n\n\n\n\n\n\nここで確認するのは次の点です。\n\n件数が想定どおりか\n最小値・最大値が常識的な範囲にあるか（負の年齢、ゼロの GDP、極端な外れ値）\n\n詳細は pandas のユーザーガイド を参照してください。\n\n\n[5] 先に図を描く\n推定の前に、変数の分布と変数間の関係を目で確認します。同じ図でもライブラリにより向き不向きがあります。卒論ではどれか1つに絞ってかまいません。\n\n\n\n表 2: 主要な作図ライブラリ\n\n\n\n\n\nライブラリ\n特徴\nドキュメント\n\n\n\n\nmatplotlib\nPython の標準的な作図ライブラリ。pandas の .plot から呼び出せる\nmatplotlib\n\n\nseaborn\n統計的な図を簡潔に書ける。matplotlib の上に乗っている\nseaborn\n\n\nplotly\nインタラクティブな図を HTML 出力できる\nplotly\n\n\nplotnine\nR の ggplot2 風の文法。layered grammar\nplotnine\n\n\n\n\n\n\n以下では seaborn を使って、最低限見ておきたい図を描きます。\n\nヒストグラム\n各変数の分布の形（左右非対称、二峰性、極端な裾）を見ます。\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.histplot(data=df, x=\"gdp_per_worker\", bins=20, ax=ax)\nplt.show()\n\n\n\n\n\n\n\n図 1: GDP per worker のヒストグラム\n\n\n\n\n\n対数軸でも見ます。\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.histplot(data=df, x=\"gdp_per_worker\", bins=20, log_scale=True, ax=ax)\nplt.show()\n\n\n\n\n\n\n\n図 2: GDP per worker のヒストグラム（対数軸）\n\n\n\n\n\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.histplot(data=df, x=\"hc\", bins=20, ax=ax)\nplt.show()\n\n\n\n\n\n\n\n図 3: Human capital index のヒストグラム\n\n\n\n\n\n\n\n散布図\n2変数の関係の向き、外れ値、直線で近似してよさそうかを見ます。\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.scatterplot(data=df, x=\"capital_per_worker\", y=\"gdp_per_worker\", alpha=0.7, ax=ax)\nplt.show()\n\n\n\n\n\n\n\n図 4: 資本/労働 と GDP/労働\n\n\n\n\n\n両軸を対数にします。\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.scatterplot(data=df, x=\"capital_per_worker\", y=\"gdp_per_worker\", alpha=0.7, ax=ax)\nax.set(xscale=\"log\", yscale=\"log\")\nplt.show()\n\n\n\n\n\n\n\n図 5: 資本/労働 と GDP/労働（両軸対数）\n\n\n\n\n\n\n\n散布図 + 回帰直線\nsns.regplot を使うと、散布図に最小二乗の回帰直線を重ねられます。推定する前に「直線で近似してよさそうか」を視覚的に確認できます。\n\nfig, ax = plt.subplots(figsize=(6, 4))\nsns.regplot(\n    x=np.log(df[\"capital_per_worker\"]),\n    y=np.log(df[\"gdp_per_worker\"]),\n    line_kws={\"color\": \"red\"},\n    scatter_kws={\"alpha\": 0.6},\n    ax=ax,\n)\nax.set_xlabel(\"log(capital per worker)\")\nax.set_ylabel(\"log(GDP per worker)\")\nplt.show()\n\n\n\n\n\n\n\n図 6: 回帰直線つき散布図\n\n\n\n\n\n\n\nペアプロット\n3変数以上の関係を一覧で見たいときに使えます。\n\nsns.pairplot(\n    df.assign(\n        log_gdp_per_worker=lambda d: np.log(d[\"gdp_per_worker\"]),\n        log_capital_per_worker=lambda d: np.log(d[\"capital_per_worker\"]),\n    )[[\"log_gdp_per_worker\", \"log_capital_per_worker\", \"hc\"]],\n    plot_kws={\"alpha\": 0.6},\n)\nplt.show()\n\n\n\n\n\n\n\n図 7: 複数変数のペアプロット\n\n\n\n\n\n\n\n他のライブラリ\nplotly はインタラクティブな図を簡単に作れます。マウスオーバーで国名を表示するといった用途に向きます。\nimport plotly.express as px\n\nfig = px.scatter(\n    df,\n    x=\"capital_per_worker\",\n    y=\"gdp_per_worker\",\n    hover_name=\"country\",\n    trendline=\"ols\",\n    log_x=True,\n    log_y=True,\n)\nfig.show()\nplotnine は R の ggplot2 と同じ文法で書けます。R 経験者にはこちらが慣れているはずです。\nfrom plotnine import ggplot, aes, geom_point, geom_smooth, scale_x_log10, scale_y_log10\n\n(\n    ggplot(df, aes(x=\"capital_per_worker\", y=\"gdp_per_worker\"))\n    + geom_point(alpha=0.6)\n    + geom_smooth(method=\"lm\")\n    + scale_x_log10()\n    + scale_y_log10()\n)\n\n\n\n\n\n\nヒント\n\n\n\n散布図で外れ値や非線形な広がり方が見えたら、対数変換やサンプル制限を検討します。\n\n\n\n\n3.0.1 外れ値を見つけたら\n外れ値らしき点が見えたら、まず異常値か実態かを判断します。配布元のドキュメントに当たり、入力ミスや単位違いの疑いがあれば修正、実態であれば原則そのまま残します。\nそれでも除外を選ぶ場合は、次の形で作業記録を残します。\n\n除外条件をコードで書く（df.query(...) や df[df['x'] &lt; ...] の形でスクリプトに残す）\n除外件数を print で確認する\n可能なら、除外あり / なしの両方で推定を回し、結果がどう変わるかを比較する\n\nコードに条件が残っていれば、Git の履歴から条件と日付が遡れます。卒論本文には、除外条件と件数を1〜2行で書き添えます。\n\n\n\n[6] 回帰の前に考えること\n図を見た段階で、推定を回す前に次のことを言葉で書き出します。\n\n予想される符号は何か\nその理由は何か（経済理論・先行研究・常識）\n逆の符号が出るとすれば、どのような要因が考えられるか（逆因果、欠落変数、測定誤差）\n\n今回の場合は、Solow 型の生産関数を念頭に「資本/労働比率が高いほど労働生産性が高くなるはず」と予想できます。傾きは正、対数同士の回帰なので、傾き = 資本に関する産出弾力性として解釈できます。\n事前に書いておかないと、推定結果を見てから「結果に合うように理由を作る」ことが起きやすくなります。1〜2行のメモで十分です。\n\n\n[7] 単回帰を実行する\nstatsmodels で単回帰を実行します。formula.api を使うと R のような式で書けます。\n\nimport statsmodels.formula.api as smf\n\nmodel = smf.ols(\"np.log(gdp_per_worker) ~ np.log(capital_per_worker)\", data=df).fit()\nprint(model.summary())\n\n                              OLS Regression Results                              \n==================================================================================\nDep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.850\nModel:                                OLS   Adj. R-squared:                  0.849\nMethod:                     Least Squares   F-statistic:                     804.7\nDate:                    Mon, 27 Apr 2026   Prob (F-statistic):           2.29e-60\nTime:                            10:26:29   Log-Likelihood:                -83.647\nNo. Observations:                     144   AIC:                             171.3\nDf Residuals:                         142   BIC:                             177.2\nDf Model:                               1                                         \nCovariance Type:                nonrobust                                         \n==============================================================================================\n                                 coef    std err          t      P&gt;|t|      [0.025      0.975]\n----------------------------------------------------------------------------------------------\nIntercept                      0.9691      0.337      2.875      0.005       0.303       1.636\nnp.log(capital_per_worker)     0.7977      0.028     28.368      0.000       0.742       0.853\n==============================================================================\nOmnibus:                       53.977   Durbin-Watson:                   2.022\nProb(Omnibus):                  0.000   Jarque-Bera (JB):              361.817\nSkew:                          -1.108   Prob(JB):                     2.71e-79\nKurtosis:                      10.443   Cond. No.                         112.\n==============================================================================\n\nNotes:\n[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.\n\n\n詳しくは statsmodels の公式ドキュメント を参照してください。\n結果を見るときは、次の順で確認します。\n\n散布図と整合的か（傾きの符号、傾きの大きさのオーダー）\n係数の符号は事前の予想と一致するか\n一致しないとき、欠落変数や逆因果が考えられるか\n解釈を言葉で書けるか（「資本/労働が 1% 増えると GDP/労働が β% 増える」と言えるか）\n\n\n\n\n\n\n\n重要結果は機械的に読まない\n\n\n\n\\(R^2\\) や p 値だけで判断しないこと。卒論では、係数の符号と大きさが事前の経済的な見立てと整合しているか、整合しない場合は何が起きていそうかを必ず議論します。次回の重回帰でも考え方は同じです。",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
     "objectID": "notes/sessions/session-02.html#自習に回すこと",
     "href": "notes/sessions/session-02.html#自習に回すこと",
     "title": "第2回 記述統計・散布図・単回帰への入口",
-    "section": "3 自習に回すこと",
-    "text": "3 自習に回すこと\n\n3.1 実務上の補足\n\n欠損処理の選択肢\n対数変換が有効な場面\n外れ値への対処をどう記録するか"
+    "section": "4 自習に回すこと",
+    "text": "4 自習に回すこと\n\n可視化ライブラリの使い方\n色々な単回帰モデルを試して statsmodels に慣れる",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
     "objectID": "notes/sessions/session-02.html#対応する実行例",
     "href": "notes/sessions/session-02.html#対応する実行例",
     "title": "第2回 記述統計・散布図・単回帰への入口",
-    "section": "4 対応する実行例",
-    "text": "4 対応する実行例\n\nscripts/session_02/describe_and_plot.py"
+    "section": "5 対応する実行例",
+    "text": "5 対応する実行例\n\nscripts/session_02/01-prepare_pwt_2023.py — 2023 年クロスセクションを data/pwt_2023.csv に保存\nscripts/session_02/02-describe_and_plot.py — 欠損確認・派生変数作成・記述統計と図\nscripts/session_02/03-regress.py — 単回帰\n\n実際のデータ分析プロジェクトでは、Jupyter Notebook で対話的に試したあと、再現可能な形でスクリプトに固める、という使い分けが標準的です。",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
     "objectID": "notes/sessions/session-02.html#メモ",
     "href": "notes/sessions/session-02.html#メモ",
     "title": "第2回 記述統計・散布図・単回帰への入口",
-    "section": "5 メモ",
-    "text": "5 メモ\nこの回では、回帰式そのものの理論説明よりも、回帰に入る前の確認作業を優先する。"
+    "section": "6 メモ",
+    "text": "6 メモ\nこの回では、回帰に入る前の確認作業を説明しました。 様々な可視化ライブラリが開発されていますので、使いやすいものを見つけてください。",
+    "crumbs": [
+      "講義ノート",
+      "Notes",
+      "第2回"
+    ]
   },
   {
     "objectID": "notes/index.html",
@@ -68,7 +110,7 @@
     "href": "notes/index.html#各回",
     "title": "データ分析ノート",
     "section": "2 各回",
-    "text": "2 各回\n\n\n\n回\nトピック\nコード\n最終更新日\n\n\n\n\n第1回\n卒論の分析作法と再現可能な作業フロー\nコード\n2026-04-17\n\n\n第2回\n記述統計・散布図・単回帰への入口\n-\n-\n\n\n第3回案\n重回帰分析を Python で実行する\n-\n-\n\n\n第4回案\n回帰表と図表を卒論向けに整える\n-\n-\n\n\n第5回案\n固定効果モデルへの入口\n-\n-\n\n\n第6回案\n時系列データの基本\n-\n-\n\n\n第7回案\nデータを自分で整える 1\n-\n-\n\n\n第8回案\nデータを自分で整える 2\n-\n-\n\n\n第9回案\nWeb API からデータを取る\n-\n-\n\n\n第10回案\nDiD の復習とイベントスタディへの入口\n-\n-\n\n\n第11回案\n機械学習への入口\n-\n-\n\n\n第12回案\nマクロのシミュレーション 1\n-\n-\n\n\n第13回案\nマクロのシミュレーション 2\n-\n-",
+    "text": "2 各回\n\n\n\n回\nトピック\nコード\n最終更新日\n\n\n\n\n第1回\n卒論の分析作法と再現可能な作業フロー\nコード\n2026-04-17\n\n\n第2回\n記述統計・散布図・単回帰への入口\nコード\n2026-04-27\n\n\n第3回案\n重回帰分析を Python で実行する\n-\n-\n\n\n第4回案\n回帰表と図表を卒論向けに整える\n-\n-\n\n\n第5回案\n固定効果モデルへの入口\n-\n-\n\n\n第6回案\n時系列データの基本\n-\n-\n\n\n第7回案\nデータを自分で整える 1\n-\n-\n\n\n第8回案\nデータを自分で整える 2\n-\n-\n\n\n第9回案\nWeb API からデータを取る\n-\n-\n\n\n第10回案\nDiD の復習とイベントスタディへの入口\n-\n-\n\n\n第11回案\n機械学習への入口\n-\n-\n\n\n第12回案\nマクロのシミュレーション 1\n-\n-\n\n\n第13回案\nマクロのシミュレーション 2\n-\n-",
     "crumbs": [
       "講義ノート",
       "Home"

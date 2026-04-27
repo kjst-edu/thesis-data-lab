@@ -23,10 +23,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -70,7 +105,39 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "サーチ"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../assets/styles.css">
 </head>
@@ -107,7 +174,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">第2回 記述統計・散布図・単回帰への入口</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/sessions/session-01.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/sessions/session-02.html">第2回</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -148,6 +215,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">第1回</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/sessions/session-02.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">第2回</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -161,27 +234,32 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#この回のねらい" id="toc-この回のねらい" class="nav-link active" data-scroll-target="#この回のねらい"><span class="header-section-number">1</span> この回のねらい</a></li>
-  <li><a href="#授業で話すこと" id="toc-授業で話すこと" class="nav-link" data-scroll-target="#授業で話すこと"><span class="header-section-number">2</span> 授業で話すこと</a>
+  <li><a href="#使うデータ" id="toc-使うデータ" class="nav-link" data-scroll-target="#使うデータ"><span class="header-section-number">2</span> 使うデータ</a>
   <ul class="collapse">
-  <li><a href="#まず変数の意味を確認する" id="toc-まず変数の意味を確認する" class="nav-link" data-scroll-target="#まず変数の意味を確認する"><span class="header-section-number">2.1</span> 1. まず変数の意味を確認する</a></li>
-  <li><a href="#記述統計量を出す" id="toc-記述統計量を出す" class="nav-link" data-scroll-target="#記述統計量を出す"><span class="header-section-number">2.2</span> 2. 記述統計量を出す</a></li>
-  <li><a href="#先に図を描く" id="toc-先に図を描く" class="nav-link" data-scroll-target="#先に図を描く"><span class="header-section-number">2.3</span> 3. 先に図を描く</a></li>
-  <li><a href="#回帰の前に考えること" id="toc-回帰の前に考えること" class="nav-link" data-scroll-target="#回帰の前に考えること"><span class="header-section-number">2.4</span> 4. 回帰の前に考えること</a></li>
-  <li><a href="#その後に単回帰重回帰へ進む" id="toc-その後に単回帰重回帰へ進む" class="nav-link" data-scroll-target="#その後に単回帰重回帰へ進む"><span class="header-section-number">2.5</span> 5. その後に単回帰・重回帰へ進む</a></li>
+  <li><a href="#データセット" id="toc-データセット" class="nav-link" data-scroll-target="#データセット">データセット</a></li>
+  <li><a href="#スクリプトの取得" id="toc-スクリプトの取得" class="nav-link" data-scroll-target="#スクリプトの取得">スクリプトの取得</a></li>
+  <li><a href="#加工データの作成" id="toc-加工データの作成" class="nav-link" data-scroll-target="#加工データの作成">加工データの作成</a></li>
   </ul></li>
-  <li><a href="#自習に回すこと" id="toc-自習に回すこと" class="nav-link" data-scroll-target="#自習に回すこと"><span class="header-section-number">3</span> 自習に回すこと</a>
+  <li><a href="#分析ステップ" id="toc-分析ステップ" class="nav-link" data-scroll-target="#分析ステップ"><span class="header-section-number">3</span> 分析ステップ</a>
   <ul class="collapse">
-  <li><a href="#実務上の補足" id="toc-実務上の補足" class="nav-link" data-scroll-target="#実務上の補足"><span class="header-section-number">3.1</span> 実務上の補足</a></li>
+  <li><a href="#変数の意味を確認する" id="toc-変数の意味を確認する" class="nav-link" data-scroll-target="#変数の意味を確認する">[1] 変数の意味を確認する</a></li>
+  <li><a href="#欠損値を確認する" id="toc-欠損値を確認する" class="nav-link" data-scroll-target="#欠損値を確認する">[2] 欠損値を確認する</a></li>
+  <li><a href="#分析用の変数を作る" id="toc-分析用の変数を作る" class="nav-link" data-scroll-target="#分析用の変数を作る">[3] 分析用の変数を作る</a></li>
+  <li><a href="#記述統計量を出す" id="toc-記述統計量を出す" class="nav-link" data-scroll-target="#記述統計量を出す">[4] 記述統計量を出す</a></li>
+  <li><a href="#先に図を描く" id="toc-先に図を描く" class="nav-link" data-scroll-target="#先に図を描く">[5] 先に図を描く</a></li>
+  <li><a href="#回帰の前に考えること" id="toc-回帰の前に考えること" class="nav-link" data-scroll-target="#回帰の前に考えること">[6] 回帰の前に考えること</a></li>
+  <li><a href="#単回帰を実行する" id="toc-単回帰を実行する" class="nav-link" data-scroll-target="#単回帰を実行する">[7] 単回帰を実行する</a></li>
   </ul></li>
-  <li><a href="#対応する実行例" id="toc-対応する実行例" class="nav-link" data-scroll-target="#対応する実行例"><span class="header-section-number">4</span> 対応する実行例</a></li>
-  <li><a href="#メモ" id="toc-メモ" class="nav-link" data-scroll-target="#メモ"><span class="header-section-number">5</span> メモ</a></li>
+  <li><a href="#自習に回すこと" id="toc-自習に回すこと" class="nav-link" data-scroll-target="#自習に回すこと"><span class="header-section-number">4</span> 自習に回すこと</a></li>
+  <li><a href="#対応する実行例" id="toc-対応する実行例" class="nav-link" data-scroll-target="#対応する実行例"><span class="header-section-number">5</span> 対応する実行例</a></li>
+  <li><a href="#メモ" id="toc-メモ" class="nav-link" data-scroll-target="#メモ"><span class="header-section-number">6</span> メモ</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/sessions/session-01.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/sessions/session-02.html">第2回</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">第2回 記述統計・散布図・単回帰への入口</h1>
 </div>
@@ -200,73 +278,1056 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p><a href="https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_02">スクリプト</a></p>
 <section id="この回のねらい" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="この回のねらい"><span class="header-section-number">1</span> この回のねらい</h2>
-<p>いきなり回帰分析に入らず、データの全体像をつかむ順序を確認する。卒論で最低限必要な「確認の流れ」を定着させる。</p>
+<p>いきなり回帰分析に入らず、データの全体像をつかむ順序を確認します。</p>
+<ol type="1">
+<li>変数の意味と単位を確認する</li>
+<li>欠損値の出方を確認する</li>
+<li>記述統計量を出す</li>
+<li>図でデータの形を見る</li>
+<li>予想される符号やメカニズムを言葉で書き出す</li>
+<li>単回帰を実行し、図と事前の見立てに整合するかを確認する</li>
+</ol>
+<p>各ライブラリの細かい使い方は公式ドキュメントに譲ります。卒論では、自分が選んだ1つを使い込むほうが効率がよいです。</p>
 </section>
-<section id="授業で話すこと" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="授業で話すこと"><span class="header-section-number">2</span> 授業で話すこと</h2>
-<section id="まず変数の意味を確認する" class="level3" data-number="2.1">
-<h3 data-number="2.1" class="anchored" data-anchor-id="まず変数の意味を確認する"><span class="header-section-number">2.1</span> 1. まず変数の意味を確認する</h3>
+<section id="使うデータ" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="使うデータ"><span class="header-section-number">2</span> 使うデータ</h2>
+<section id="データセット" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="データセット">データセット</h3>
+<p>第1回で使った <a href="https://www.rug.nl/ggdc/productivity/pwt/">Penn World Table 11.0</a>（PWT）を再利用し、ここでは <strong>2023 年のクロスセクション</strong>を抽出して使います。第1回と同じく、生データ <code>pwt110.dta</code> は <code>.env</code> の <code>RAW_DATA_DIR</code> 配下に置かれている前提です。</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span>データの引用条件を確認する
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>データの配布元には引用条件が示されていることが多くあります。PWT の場合、配布ページに次の指示があります。</p>
+<blockquote class="blockquote">
+<p>Attribution requirement - When using these data (for whatever purpose), please make the following reference:</p>
+<p>Feenstra, Robert C., Robert Inklaar and Marcel P. Timmer (2015), “The Next Generation of the Penn World Table” <em>American Economic Review</em>, 105(10), 3150-3182, available for download at www.ggdc.net/pwt</p>
+</blockquote>
+<p>卒論で使うデータごとに「How to cite」「Terms of Use」「License」などの記載を探し、本文や参考文献に反映させます。</p>
+</div>
+</div>
+</section>
+<section id="スクリプトの取得" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="スクリプトの取得">スクリプトの取得</h3>
+<p>スクリプト一式は配布リポジトリの <a href="https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_02">scripts/session_02/</a> に置いてあります。最新版を取り込むには、自分のプロジェクトのルートで次を実行します。</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="os">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Mac</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Windows</a></li></ul>
+<div class="tab-content" data-group="os">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo clone kjst-edu/thesis-data-lab _tdl <span class="at">--</span> <span class="at">--depth</span> 1 <span class="kw">&amp;&amp;</span> <span class="fu">cp</span> <span class="at">-r</span> _tdl/scripts/session_02 scripts/ <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> <span class="at">-rf</span> _tdl</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gh repo clone kjst-edu<span class="op">/</span>thesis-data-lab _tdl <span class="op">--</span> <span class="op">--</span>depth <span class="dv">1</span><span class="op">;</span> <span class="fu">Copy-Item</span> _tdl\scripts\session_02 scripts\ <span class="op">-</span>Recurse<span class="op">;</span> <span class="fu">Remove-Item</span> _tdl <span class="op">-</span>Recurse <span class="op">-</span>Force</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="加工データの作成" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="加工データの作成">加工データの作成</h3>
+<p>加工コードは <code>scripts/session_02/01-prepare_pwt_2023.py</code> に分けてあります。中身は次のとおりです。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scripts/session_02/01-prepare_pwt_2023.py</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Penn World Table (PWT 11.0) から 2023 年のクロスセクションを抽出し、</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># data/pwt_2023.csv として保存する。欠損値の処理や派生変数の作成は</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 行わず、後段の分析スクリプトに任せる。</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>RAW_DATA_DIR <span class="op">=</span> Path(os.environ[<span class="st">"RAW_DATA_DIR"</span>])</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>YEAR <span class="op">=</span> <span class="dv">2023</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>OUTPUT_DATA <span class="op">=</span> Path(<span class="st">"data/pwt_2023.csv"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>USE_COLS <span class="op">=</span> [</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"countrycode"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rgdpna"</span>, <span class="st">"pop"</span>, <span class="st">"emp"</span>, <span class="st">"avh"</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rnna"</span>, <span class="st">"hc"</span>, <span class="st">"labsh"</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_stata(RAW_DATA_DIR <span class="op">/</span> <span class="st">"pwt110.dta"</span>, columns<span class="op">=</span>USE_COLS)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> raw[raw[<span class="st">"year"</span>] <span class="op">==</span> YEAR].copy()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>OUTPUT_DATA.parent.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>df.to_csv(OUTPUT_DATA, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>実行します。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run scripts/session_02/01-prepare_pwt_2023.py</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>これで <code>data/pwt_2023.csv</code> ができます。以降のチャンクはここから読み込みます。</p>
+</section>
+</section>
+<section id="分析ステップ" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="分析ステップ"><span class="header-section-number">3</span> 分析ステップ</h2>
+<section id="変数の意味を確認する" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="変数の意味を確認する">[1] 変数の意味を確認する</h3>
+<p>データを読み込んだ直後に、各列が何を表しているかを言葉で説明できる状態にします。</p>
 <ul>
-<li>変数名だけで判断しない</li>
-<li>単位、欠損、集計単位を確認する</li>
-<li>目的変数と説明変数の候補を言葉で説明してみる</li>
+<li>変数名だけで判断しない（<code>income</code> が世帯か個人か、税前か税後か、月か年かは名前ではわからない）</li>
+<li>単位を確認する（金額の通貨、人数か割合か、対数を取った後の値か）</li>
+<li>集計単位を確認する（個人・世帯・企業・地域・年など）</li>
+<li>目的変数と説明変数の候補を、データを見るより先に言葉で挙げる</li>
 </ul>
+<p>PWT の場合、変数の単位は配布ページの User Guide に書かれています。たとえば <code>rgdpna</code> は「100万 2017 USD」、<code>pop</code>・<code>emp</code> は「100万人」なので <code>rgdpna / emp</code> はそのまま「労働者1人あたり 2017 USD」になります。この単位確認を省くと、図の縦軸の桁が3桁ずれるといったミスが起きます。</p>
+<p>今回使う PWT の変数を表にまとめると、次のようになります。</p>
+<div id="tbl-pwt-vars" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pwt-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;1: 今回使う PWT 11.0 の変数
+</figcaption>
+<div aria-describedby="tbl-pwt-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">変数</th>
+<th style="text-align: left;">意味</th>
+<th style="text-align: left;">単位</th>
+<th style="text-align: left;">観測単位</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>countrycode</code></td>
+<td style="text-align: left;">ISO 3文字国コード</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">国</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>country</code></td>
+<td style="text-align: left;">国名</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">国</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>year</code></td>
+<td style="text-align: left;">暦年</td>
+<td style="text-align: left;">年</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>rgdpna</code></td>
+<td style="text-align: left;">実質 GDP（自国価格基準）</td>
+<td style="text-align: left;">100万 2017 USD</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>pop</code></td>
+<td style="text-align: left;">人口</td>
+<td style="text-align: left;">100万人</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>emp</code></td>
+<td style="text-align: left;">就業者数</td>
+<td style="text-align: left;">100万人</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>avh</code></td>
+<td style="text-align: left;">年間平均労働時間</td>
+<td style="text-align: left;">時間/人</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>rnna</code></td>
+<td style="text-align: left;">資本ストック（自国価格基準）</td>
+<td style="text-align: left;">100万 2017 USD</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>hc</code></td>
+<td style="text-align: left;">人的資本指数</td>
+<td style="text-align: left;">指数</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>labsh</code></td>
+<td style="text-align: left;">労働分配率</td>
+<td style="text-align: left;">比率（0〜1）</td>
+<td style="text-align: left;">国 × 年</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>卒論でも、扱うデータごとにこうした表を <code>data/</code> フォルダにメモとして残しておくと、変数の取り違えや単位の勘違いを防げます。</p>
+<div id="cell-load" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/pwt_2023.csv"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="load" class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countrycode</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">rgdpna</th>
+<th data-quarto-table-cell-role="th">pop</th>
+<th data-quarto-table-cell-role="th">emp</th>
+<th data-quarto-table-cell-role="th">avh</th>
+<th data-quarto-table-cell-role="th">rnna</th>
+<th data-quarto-table-cell-role="th">hc</th>
+<th data-quarto-table-cell-role="th">labsh</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>ABW</td>
+<td>Aruba</td>
+<td>2023</td>
+<td>4555.60940</td>
+<td>0.107939</td>
+<td>0.048628</td>
+<td>NaN</td>
+<td>22632.262</td>
+<td>NaN</td>
+<td>0.645106</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>AGO</td>
+<td>Angola</td>
+<td>2023</td>
+<td>224326.30000</td>
+<td>36.749906</td>
+<td>17.260809</td>
+<td>2114.50</td>
+<td>700716.300</td>
+<td>1.544955</td>
+<td>0.223235</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>AIA</td>
+<td>Anguilla</td>
+<td>2023</td>
+<td>343.92654</td>
+<td>0.014410</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>4179.440</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>ALB</td>
+<td>Albania</td>
+<td>2023</td>
+<td>45875.40600</td>
+<td>2.811655</td>
+<td>1.169550</td>
+<td>2151.97</td>
+<td>261367.620</td>
+<td>3.018473</td>
+<td>0.704890</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>ARE</td>
+<td>United Arab Emirates</td>
+<td>2023</td>
+<td>792086.44000</td>
+<td>10.642081</td>
+<td>6.200720</td>
+<td>2514.45</td>
+<td>5951651.500</td>
+<td>3.304345</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ノート
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>出所が明確なデータでも、変数の定義は配布元のドキュメントで必ず確認します。</p>
+</div>
+</div>
 </section>
-<section id="記述統計量を出す" class="level3" data-number="2.2">
-<h3 data-number="2.2" class="anchored" data-anchor-id="記述統計量を出す"><span class="header-section-number">2.2</span> 2. 記述統計量を出す</h3>
+<section id="欠損値を確認する" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="欠損値を確認する">[2] 欠損値を確認する</h3>
+<p>記述統計に進む前に、各列の欠損が何件あるかを確認しておきます。<code>DataFrame.isna().sum()</code> で列ごとの NaN 件数が出せます。</p>
+<div id="cell-missing" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="missing" class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>countrycode     0
+country         0
+year            0
+rgdpna          0
+pop             0
+emp             6
+avh            55
+rnna            5
+hc             40
+labsh          45
+dtype: int64</code></pre>
+</div>
+</div>
+<p>PWT 2023 年は 185 か国分の行がありますが、変数によっては欠損が多めです。</p>
 <ul>
-<li>件数</li>
-<li>平均</li>
-<li>標準偏差</li>
-<li>最小値と最大値</li>
+<li><code>avh</code>（年間平均労働時間）と <code>labsh</code>（労働分配率）は欠損が多く、3割前後の国で取れない</li>
+<li><code>hc</code>（人的資本指数）は2割ほど欠損</li>
+<li><code>rgdpna</code>、<code>pop</code>、<code>emp</code>、<code>rnna</code> は比較的そろっている</li>
 </ul>
-</section>
-<section id="先に図を描く" class="level3" data-number="2.3">
-<h3 data-number="2.3" class="anchored" data-anchor-id="先に図を描く"><span class="header-section-number">2.3</span> 3. 先に図を描く</h3>
+<p>欠損があるときの対処は何通りかありますが、どの選択肢にも独自の偏りが伴います。</p>
 <ul>
-<li>散布図で関係の向きを見る</li>
-<li>外れ値がないかを見る</li>
-<li>直線で近似してよさそうかを考える</li>
+<li><strong>行を落とす</strong> — 最も単純。ただし PWT の場合、欠損は統計行政が弱い国・規模が小さい国・透明性が低い国に集中するので、残るサンプルが「規模が大きく統計が整った経済」に寄る偏りが入る</li>
+<li><strong>対象年を変える</strong> — 2022年や2021年に切り替えると、最新値が間に合っていない国を拾えることがある。ただし「2023 年について論じたい」場合は別の話になる</li>
+<li><strong>国ごとに利用可能な最新年を取る</strong> — サンプル数を保てるが、基準年が国でばらつく。構造的にゆっくり動く変数（人的資本など）に向く</li>
+<li><strong>他のデータソースで補う</strong> — World Bank WDI、OECD、IMF などで埋める方法もある。出所ごとに定義や対象年が微妙に違うので、本文で出所と定義のズレを明示する</li>
 </ul>
+<p>どの選択肢を選んでも、サンプルは何らかの形で偏ります。卒論では「なぜその処理を選んだか」「結果として残ったのはどんな国か」を本文に書き残しておくと、後の議論や反例の説明がしやすくなります。</p>
+<p>今回は教材なので、最も単純な「行を落とす」を採ります。<code>rgdpna</code>、<code>emp</code>、<code>rnna</code>、<code>hc</code> のいずれかに欠損がある国を分析サンプルから外します（<code>hc</code> は後段のペアプロットで使うので一緒に落としておきます）。</p>
+<p>どの国が落ちるか見ておきます。</p>
+<div id="cell-dropped" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> df[[<span class="st">"rgdpna"</span>, <span class="st">"emp"</span>, <span class="st">"rnna"</span>, <span class="st">"hc"</span>]].isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"落ちる国数: </span><span class="sc">{</span>mask<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df.loc[mask, [<span class="st">"countrycode"</span>, <span class="st">"country"</span>, <span class="st">"pop"</span>]].sort_values(<span class="st">"pop"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>落ちる国数: 41</code></pre>
+</div>
+<div id="dropped" class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countrycode</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">pop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">118</th>
+<td>MSR</td>
+<td>Montserrat</td>
+<td>0.004420</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2</th>
+<td>AIA</td>
+<td>Anguilla</td>
+<td>0.014410</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">179</th>
+<td>VGB</td>
+<td>British Virgin Islands</td>
+<td>0.038985</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">158</th>
+<td>SXM</td>
+<td>Sint Maarten (Dutch part)</td>
+<td>0.042749</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">161</th>
+<td>TCA</td>
+<td>Turks and Caicos Islands</td>
+<td>0.046198</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">92</th>
+<td>KNA</td>
+<td>Saint Kitts and Nevis</td>
+<td>0.046758</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>BMU</td>
+<td>Bermuda</td>
+<td>0.064698</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">48</th>
+<td>DMA</td>
+<td>Dominica</td>
+<td>0.066510</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">43</th>
+<td>CYM</td>
+<td>Cayman Islands</td>
+<td>0.073038</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>ATG</td>
+<td>Antigua and Barbuda</td>
+<td>0.093316</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">177</th>
+<td>VCT</td>
+<td>St. Vincent and the Grenadines</td>
+<td>0.101323</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0</th>
+<td>ABW</td>
+<td>Aruba</td>
+<td>0.107939</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">69</th>
+<td>GRD</td>
+<td>Grenada</td>
+<td>0.117081</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">159</th>
+<td>SYC</td>
+<td>Seychelles</td>
+<td>0.127951</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">98</th>
+<td>LCA</td>
+<td>Saint Lucia</td>
+<td>0.179285</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">42</th>
+<td>CUW</td>
+<td>Curaçao</td>
+<td>0.185427</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">152</th>
+<td>STP</td>
+<td>Sao Tome and Principe</td>
+<td>0.230871</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">18</th>
+<td>BHS</td>
+<td>Bahamas</td>
+<td>0.399440</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>CPV</td>
+<td>Cabo Verde</td>
+<td>0.522331</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">153</th>
+<td>SUR</td>
+<td>Suriname</td>
+<td>0.628886</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">114</th>
+<td>MNE</td>
+<td>Montenegro</td>
+<td>0.633552</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>BTN</td>
+<td>Bhutan</td>
+<td>0.786385</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">71</th>
+<td>GUY</td>
+<td>Guyana</td>
+<td>0.826353</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>COM</td>
+<td>Comoros</td>
+<td>0.850387</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">47</th>
+<td>DJI</td>
+<td>Djibouti</td>
+<td>1.152944</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">110</th>
+<td>MKD</td>
+<td>North Macedonia</td>
+<td>1.831802</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">67</th>
+<td>GNQ</td>
+<td>Equatorial Guinea</td>
+<td>1.847549</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">66</th>
+<td>GNB</td>
+<td>Guinea-Bissau</td>
+<td>2.153339</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">19</th>
+<td>BIH</td>
+<td>Bosnia and Herzegovina</td>
+<td>3.185073</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">62</th>
+<td>GEO</td>
+<td>Georgia</td>
+<td>3.807492</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">130</th>
+<td>OMN</td>
+<td>Oman</td>
+<td>5.049269</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">138</th>
+<td>PSE</td>
+<td>State of Palestine</td>
+<td>5.409202</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">96</th>
+<td>LBN</td>
+<td>Lebanon</td>
+<td>5.773493</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">166</th>
+<td>TKM</td>
+<td>Turkmenistan</td>
+<td>7.364438</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>BLR</td>
+<td>Belarus</td>
+<td>9.115680</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">10</th>
+<td>AZE</td>
+<td>Azerbaijan</td>
+<td>10.318207</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">151</th>
+<td>SSD</td>
+<td>South Sudan</td>
+<td>11.483374</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">64</th>
+<td>GIN</td>
+<td>Guinea</td>
+<td>14.405468</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">149</th>
+<td>SOM</td>
+<td>Somalia</td>
+<td>18.358615</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">162</th>
+<td>TCD</td>
+<td>Chad</td>
+<td>19.319064</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">176</th>
+<td>UZB</td>
+<td>Uzbekistan</td>
+<td>35.652307</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+警告
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>欠損行を黙って落とすと、分析結果がどの国を見たものなのかが本文から消えます。何件除外したか、なぜ除外したかをメモに残しておきます。</p>
+</div>
+</div>
 </section>
-<section id="回帰の前に考えること" class="level3" data-number="2.4">
-<h3 data-number="2.4" class="anchored" data-anchor-id="回帰の前に考えること"><span class="header-section-number">2.4</span> 4. 回帰の前に考えること</h3>
+<section id="分析用の変数を作る" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="分析用の変数を作る">[3] 分析用の変数を作る</h3>
+<p>欠損行を落として、対数と労働者あたり指標を計算します。</p>
+<div id="cell-derive" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">"rgdpna"</span>, <span class="st">"emp"</span>, <span class="st">"rnna"</span>, <span class="st">"hc"</span>]).copy()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"gdp_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rgdpna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"capital_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rnna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df.shape</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="derive" class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>(144, 12)</code></pre>
+</div>
+</div>
+</section>
+<section id="記述統計量を出す" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="記述統計量を出す">[4] 記述統計量を出す</h3>
+<p>件数・平均・標準偏差・最小値・最大値を確認します。pandas の <code>DataFrame.describe()</code> で一括して見られます。</p>
+<div id="cell-describe" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"gdp_per_worker"</span>, <span class="st">"capital_per_worker"</span>, <span class="st">"hc"</span>]].describe().<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="describe" class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gdp_per_worker</th>
+<th data-quarto-table-cell-role="th">capital_per_worker</th>
+<th data-quarto-table-cell-role="th">hc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>144.00</td>
+<td>144.00</td>
+<td>144.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>56478.87</td>
+<td>276027.16</td>
+<td>2.78</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>47501.73</td>
+<td>259272.46</td>
+<td>0.68</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>346.33</td>
+<td>4659.49</td>
+<td>1.26</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>17115.44</td>
+<td>72661.12</td>
+<td>2.17</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>41057.13</td>
+<td>180214.77</td>
+<td>2.86</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>85075.81</td>
+<td>462687.72</td>
+<td>3.32</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>267579.16</td>
+<td>1356592.48</td>
+<td>3.99</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>ここで確認するのは次の点です。</p>
+<ul>
+<li>件数が想定どおりか</li>
+<li>最小値・最大値が常識的な範囲にあるか（負の年齢、ゼロの GDP、極端な外れ値）</li>
+</ul>
+<p>詳細は <a href="https://pandas.pydata.org/docs/user_guide/">pandas のユーザーガイド</a> を参照してください。</p>
+</section>
+<section id="先に図を描く" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="先に図を描く">[5] 先に図を描く</h3>
+<p>推定の前に、変数の分布と変数間の関係を目で確認します。同じ図でもライブラリにより向き不向きがあります。卒論ではどれか1つに絞ってかまいません。</p>
+<div id="tbl-plot-libraries" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-plot-libraries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;2: 主要な作図ライブラリ
+</figcaption>
+<div aria-describedby="tbl-plot-libraries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">ライブラリ</th>
+<th style="text-align: left;">特徴</th>
+<th style="text-align: left;">ドキュメント</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">matplotlib</td>
+<td style="text-align: left;">Python の標準的な作図ライブラリ。pandas の <code>.plot</code> から呼び出せる</td>
+<td style="text-align: left;"><a href="https://matplotlib.org/stable/">matplotlib</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">seaborn</td>
+<td style="text-align: left;">統計的な図を簡潔に書ける。matplotlib の上に乗っている</td>
+<td style="text-align: left;"><a href="https://seaborn.pydata.org/">seaborn</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">plotly</td>
+<td style="text-align: left;">インタラクティブな図を HTML 出力できる</td>
+<td style="text-align: left;"><a href="https://plotly.com/python/">plotly</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">plotnine</td>
+<td style="text-align: left;">R の ggplot2 風の文法。layered grammar</td>
+<td style="text-align: left;"><a href="https://plotnine.org/">plotnine</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>以下では seaborn を使って、最低限見ておきたい図を描きます。</p>
+<section id="ヒストグラム" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="ヒストグラム">ヒストグラム</h4>
+<p>各変数の分布の形（左右非対称、二峰性、極端な裾）を見ます。</p>
+<div id="cell-fig-hist-gdp" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"gdp_per_worker"</span>, bins<span class="op">=</span><span class="dv">20</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-hist-gdp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-gdp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-hist-gdp-output-1.png" width="510" height="356" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-gdp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;1: GDP per worker のヒストグラム
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>対数軸でも見ます。</p>
+<div id="cell-fig-hist-gdp-log" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"gdp_per_worker"</span>, bins<span class="op">=</span><span class="dv">20</span>, log_scale<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-hist-gdp-log" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-gdp-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-hist-gdp-log-output-1.png" width="510" height="359" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-gdp-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;2: GDP per worker のヒストグラム（対数軸）
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-fig-hist-hc" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"hc"</span>, bins<span class="op">=</span><span class="dv">20</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-hist-hc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-hc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-hist-hc-output-1.png" width="510" height="356" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-hc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;3: Human capital index のヒストグラム
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="散布図" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="散布図">散布図</h4>
+<p>2変数の関係の向き、外れ値、直線で近似してよさそうかを見ます。</p>
+<div id="cell-fig-scatter-k-y" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"capital_per_worker"</span>, y<span class="op">=</span><span class="st">"gdp_per_worker"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-scatter-k-y" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-k-y-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-scatter-k-y-output-1.png" width="547" height="356" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-k-y-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;4: 資本/労働 と GDP/労働
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>両軸を対数にします。</p>
+<div id="cell-fig-scatter-k-y-log" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"capital_per_worker"</span>, y<span class="op">=</span><span class="st">"gdp_per_worker"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xscale<span class="op">=</span><span class="st">"log"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-scatter-k-y-log" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-k-y-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-scatter-k-y-log-output-1.png" width="517" height="357" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-k-y-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;5: 資本/労働 と GDP/労働（両軸対数）
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="散布図-回帰直線" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="散布図-回帰直線">散布図 + 回帰直線</h4>
+<p><code>sns.regplot</code> を使うと、散布図に最小二乗の回帰直線を重ねられます。推定する前に「直線で近似してよさそうか」を視覚的に確認できます。</p>
+<div id="cell-fig-regplot" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sns.regplot(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>np.log(df[<span class="st">"capital_per_worker"</span>]),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>np.log(df[<span class="st">"gdp_per_worker"</span>]),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    line_kws<span class="op">=</span>{<span class="st">"color"</span>: <span class="st">"red"</span>},</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    scatter_kws<span class="op">=</span>{<span class="st">"alpha"</span>: <span class="fl">0.6</span>},</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"log(capital per worker)"</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"log(GDP per worker)"</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-regplot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-regplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-regplot-output-1.png" width="510" height="356" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-regplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;6: 回帰直線つき散布図
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ペアプロット" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="ペアプロット">ペアプロット</h4>
+<p>3変数以上の関係を一覧で見たいときに使えます。</p>
+<div id="cell-fig-pairplot" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sns.pairplot(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    df.assign(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        log_gdp_per_worker<span class="op">=</span><span class="kw">lambda</span> d: np.log(d[<span class="st">"gdp_per_worker"</span>]),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        log_capital_per_worker<span class="op">=</span><span class="kw">lambda</span> d: np.log(d[<span class="st">"capital_per_worker"</span>]),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    )[[<span class="st">"log_gdp_per_worker"</span>, <span class="st">"log_capital_per_worker"</span>, <span class="st">"hc"</span>]],</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    plot_kws<span class="op">=</span>{<span class="st">"alpha"</span>: <span class="fl">0.6</span>},</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-pairplot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pairplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-02_files/figure-html/fig-pairplot-output-1.png" width="711" height="711" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pairplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;7: 複数変数のペアプロット
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="他のライブラリ" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="他のライブラリ">他のライブラリ</h4>
+<p><a href="https://plotly.com/python/">plotly</a> はインタラクティブな図を簡単に作れます。マウスオーバーで国名を表示するといった用途に向きます。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.scatter(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">"capital_per_worker"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">"gdp_per_worker"</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    hover_name<span class="op">=</span><span class="st">"country"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    trendline<span class="op">=</span><span class="st">"ols"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    log_x<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    log_y<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="https://plotnine.org/">plotnine</a> は R の ggplot2 と同じ文法で書けます。R 経験者にはこちらが慣れているはずです。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> ggplot, aes, geom_point, geom_smooth, scale_x_log10, scale_y_log10</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    ggplot(df, aes(x<span class="op">=</span><span class="st">"capital_per_worker"</span>, y<span class="op">=</span><span class="st">"gdp_per_worker"</span>))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(method<span class="op">=</span><span class="st">"lm"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_x_log10()</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_y_log10()</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ヒント
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>散布図で外れ値や非線形な広がり方が見えたら、対数変換やサンプル制限を検討します。</p>
+</div>
+</div>
+</section>
+<section id="外れ値を見つけたら" class="level4" data-number="3.0.1">
+<h4 data-number="3.0.1" class="anchored" data-anchor-id="外れ値を見つけたら"><span class="header-section-number">3.0.1</span> 外れ値を見つけたら</h4>
+<p>外れ値らしき点が見えたら、まず<strong>異常値か実態か</strong>を判断します。配布元のドキュメントに当たり、入力ミスや単位違いの疑いがあれば修正、実態であれば原則そのまま残します。</p>
+<p>それでも除外を選ぶ場合は、次の形で作業記録を残します。</p>
+<ul>
+<li>除外条件をコードで書く（<code>df.query(...)</code> や <code>df[df['x'] &lt; ...]</code> の形でスクリプトに残す）</li>
+<li>除外件数を <code>print</code> で確認する</li>
+<li>可能なら、除外あり / なしの両方で推定を回し、結果がどう変わるかを比較する</li>
+</ul>
+<p>コードに条件が残っていれば、Git の履歴から条件と日付が遡れます。卒論本文には、除外条件と件数を1〜2行で書き添えます。</p>
+</section>
+</section>
+<section id="回帰の前に考えること" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="回帰の前に考えること">[6] 回帰の前に考えること</h3>
+<p>図を見た段階で、推定を回す前に次のことを言葉で書き出します。</p>
 <ul>
 <li>予想される符号は何か</li>
-<li>その理由を言葉で説明できるか</li>
-<li>逆の符号が出るとすれば、どのような要因がありそうか</li>
+<li>その理由は何か（経済理論・先行研究・常識）</li>
+<li>逆の符号が出るとすれば、どのような要因が考えられるか（逆因果、欠落変数、測定誤差）</li>
 </ul>
+<p>今回の場合は、Solow 型の生産関数を念頭に「資本/労働比率が高いほど労働生産性が高くなるはず」と予想できます。傾きは正、対数同士の回帰なので、傾き = 資本に関する産出弾力性として解釈できます。</p>
+<p>事前に書いておかないと、推定結果を見てから「結果に合うように理由を作る」ことが起きやすくなります。1〜2行のメモで十分です。</p>
 </section>
-<section id="その後に単回帰重回帰へ進む" class="level3" data-number="2.5">
-<h3 data-number="2.5" class="anchored" data-anchor-id="その後に単回帰重回帰へ進む"><span class="header-section-number">2.5</span> 5. その後に単回帰・重回帰へ進む</h3>
+<section id="単回帰を実行する" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="単回帰を実行する">[7] 単回帰を実行する</h3>
+<p>statsmodels で単回帰を実行します。<code>formula.api</code> を使うと R のような式で書けます。</p>
+<div id="regression" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> smf.ols(<span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker)"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.summary())</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              OLS Regression Results                              
+==================================================================================
+Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.850
+Model:                                OLS   Adj. R-squared:                  0.849
+Method:                     Least Squares   F-statistic:                     804.7
+Date:                    Mon, 27 Apr 2026   Prob (F-statistic):           2.29e-60
+Time:                            10:26:29   Log-Likelihood:                -83.647
+No. Observations:                     144   AIC:                             171.3
+Df Residuals:                         142   BIC:                             177.2
+Df Model:                               1                                         
+Covariance Type:                nonrobust                                         
+==============================================================================================
+                                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------
+Intercept                      0.9691      0.337      2.875      0.005       0.303       1.636
+np.log(capital_per_worker)     0.7977      0.028     28.368      0.000       0.742       0.853
+==============================================================================
+Omnibus:                       53.977   Durbin-Watson:                   2.022
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              361.817
+Skew:                          -1.108   Prob(JB):                     2.71e-79
+Kurtosis:                      10.443   Cond. No.                         112.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<p>詳しくは <a href="https://www.statsmodels.org/stable/">statsmodels の公式ドキュメント</a> を参照してください。</p>
+<p>結果を見るときは、次の順で確認します。</p>
 <ul>
-<li>推定結果だけを見るのではなく、図と整合的かを確認する</li>
-<li>係数の符号、桁、解釈可能性を確認する</li>
+<li>散布図と整合的か（傾きの符号、傾きの大きさのオーダー）</li>
+<li>係数の符号は事前の予想と一致するか</li>
+<li>一致しないとき、欠落変数や逆因果が考えられるか</li>
+<li>解釈を言葉で書けるか（「資本/労働が 1% 増えると GDP/労働が β% 増える」と言えるか）</li>
 </ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span>結果は機械的に読まない
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(R^2\)</span> や p 値だけで判断しないこと。卒論では、係数の符号と大きさが事前の経済的な見立てと整合しているか、整合しない場合は何が起きていそうかを必ず議論します。次回の重回帰でも考え方は同じです。</p>
+</div>
+</div>
 </section>
 </section>
-<section id="自習に回すこと" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="自習に回すこと"><span class="header-section-number">3</span> 自習に回すこと</h2>
-<section id="実務上の補足" class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="実務上の補足"><span class="header-section-number">3.1</span> 実務上の補足</h3>
+<section id="自習に回すこと" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="自習に回すこと"><span class="header-section-number">4</span> 自習に回すこと</h2>
 <ul>
-<li>欠損処理の選択肢</li>
-<li>対数変換が有効な場面</li>
-<li>外れ値への対処をどう記録するか</li>
+<li>可視化ライブラリの使い方</li>
+<li>色々な単回帰モデルを試して statsmodels に慣れる</li>
 </ul>
 </section>
-</section>
-<section id="対応する実行例" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="対応する実行例"><span class="header-section-number">4</span> 対応する実行例</h2>
+<section id="対応する実行例" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="対応する実行例"><span class="header-section-number">5</span> 対応する実行例</h2>
 <ul>
-<li><code>scripts/session_02/describe_and_plot.py</code></li>
+<li><code>scripts/session_02/01-prepare_pwt_2023.py</code> — 2023 年クロスセクションを <code>data/pwt_2023.csv</code> に保存</li>
+<li><code>scripts/session_02/02-describe_and_plot.py</code> — 欠損確認・派生変数作成・記述統計と図</li>
+<li><code>scripts/session_02/03-regress.py</code> — 単回帰</li>
 </ul>
+<p>実際のデータ分析プロジェクトでは、Jupyter Notebook で対話的に試したあと、再現可能な形でスクリプトに固める、という使い分けが標準的です。</p>
 </section>
-<section id="メモ" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="メモ"><span class="header-section-number">5</span> メモ</h2>
-<p>この回では、回帰式そのものの理論説明よりも、回帰に入る前の確認作業を優先する。</p>
+<section id="メモ" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="メモ"><span class="header-section-number">6</span> メモ</h2>
+<p>この回では、回帰に入る前の確認作業を説明しました。 様々な可視化ライブラリが開発されていますので、使いやすいものを見つけてください。</p>
 
 
 </section>
