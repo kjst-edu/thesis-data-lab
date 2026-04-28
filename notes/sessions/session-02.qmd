@@ -51,7 +51,7 @@ gh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1 && cp -r _tdl/scripts/s
 ## Windows
 
 ``` powershell
-gh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1; Copy-Item _tdl\scripts\session_02 scripts\ -Recurse; Remove-Item _tdl -Recurse -Force
+gh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1; Copy-Item _tdl\scripts\session_02 scripts\session_02 -Recurse -Force; Remove-Item _tdl -Recurse -Force
 ```
 :::
 
