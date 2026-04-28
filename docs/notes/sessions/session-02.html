@@ -326,7 +326,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo clone kjst-edu/thesis-data-lab _tdl <span class="at">--</span> <span class="at">--depth</span> 1 <span class="kw">&amp;&amp;</span> <span class="fu">cp</span> <span class="at">-r</span> _tdl/scripts/session_02 scripts/ <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> <span class="at">-rf</span> _tdl</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gh repo clone kjst-edu<span class="op">/</span>thesis-data-lab _tdl <span class="op">--</span> <span class="op">--</span>depth <span class="dv">1</span><span class="op">;</span> <span class="fu">Copy-Item</span> _tdl\scripts\session_02 scripts\ <span class="op">-</span>Recurse<span class="op">;</span> <span class="fu">Remove-Item</span> _tdl <span class="op">-</span>Recurse <span class="op">-</span>Force</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gh repo clone kjst-edu<span class="op">/</span>thesis-data-lab _tdl <span class="op">--</span> <span class="op">--</span>depth <span class="dv">1</span><span class="op">;</span> <span class="fu">Copy-Item</span> _tdl\scripts\session_02 scripts\session_02 <span class="op">-</span>Recurse <span class="op">-</span>Force<span class="op">;</span> <span class="fu">Remove-Item</span> _tdl <span class="op">-</span>Recurse <span class="op">-</span>Force</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -472,7 +472,7 @@ window.Quarto = {
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/pwt_2023.csv"</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="load" class="cell-output cell-output-display" data-execution_count="1">
+<div id="load" class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -583,7 +583,7 @@ window.Quarto = {
 <p>記述統計に進む前に、各列の欠損が何件あるかを確認しておきます。<code>DataFrame.isna().sum()</code> で列ごとの NaN 件数が出せます。</p>
 <div id="cell-missing" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="missing" class="cell-output cell-output-display" data-execution_count="2">
+<div id="missing" class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>countrycode     0
 country         0
 year            0
@@ -620,7 +620,7 @@ dtype: int64</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>落ちる国数: 41</code></pre>
 </div>
-<div id="dropped" class="cell-output cell-output-display" data-execution_count="3">
+<div id="dropped" class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -908,7 +908,7 @@ dtype: int64</code></pre>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"gdp_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rgdpna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"capital_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rnna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df.shape</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="derive" class="cell-output cell-output-display" data-execution_count="4">
+<div id="derive" class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>(144, 12)</code></pre>
 </div>
 </div>
@@ -918,7 +918,7 @@ dtype: int64</code></pre>
 <p>件数・平均・標準偏差・最小値・最大値を確認します。pandas の <code>DataFrame.describe()</code> で一括して見られます。</p>
 <div id="cell-describe" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"gdp_per_worker"</span>, <span class="st">"capital_per_worker"</span>, <span class="st">"hc"</span>]].describe().<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="describe" class="cell-output cell-output-display" data-execution_count="5">
+<div id="describe" class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -1264,8 +1264,8 @@ dtype: int64</code></pre>
 Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.850
 Model:                                OLS   Adj. R-squared:                  0.849
 Method:                     Least Squares   F-statistic:                     804.7
-Date:                    Mon, 27 Apr 2026   Prob (F-statistic):           2.29e-60
-Time:                            10:26:29   Log-Likelihood:                -83.647
+Date:                    Tue, 28 Apr 2026   Prob (F-statistic):           2.29e-60
+Time:                            09:40:07   Log-Likelihood:                -83.647
 No. Observations:                     144   AIC:                             171.3
 Df Residuals:                         142   BIC:                             177.2
 Df Model:                               1                                         
