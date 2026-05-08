@@ -1,0 +1,385 @@
+---
+title: "第3回 重回帰分析の入口"
+execute:
+  echo: true
+---
+
+[スクリプト](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_03)
+
+## この回のねらい
+
+第2回の単回帰を、重回帰・対数変換・ダミー変数・交差項に拡張します。statsmodels に限らず、回帰モデル系のライブラリ（linearmodels、scikit-learn など）は **「モデル定義 → `.fit()` → 結果を見る」** の流れで使います。今回はこのパターンに慣れます。
+
+1. 単回帰から重回帰へ
+2. 対数変換した係数の読み方
+3. ダミー変数
+4. 交差項
+5. patsy の formula 記法
+
+実行コードは `scripts/session_03/02-multiple_regression.py` に **穴埋め** で置いてあります。VS Code で開き、`____` を埋めながら順に実行してください。このノートには答えと解釈が載っています。詰まったらここを見てください。
+
+## 使うデータ
+
+第2回と同じ PWT 11.0 の 2023 年クロスセクションに、**OECD 加盟国かどうか**を示すダミー変数 `is_oecd` を追加して使います。
+
+### スクリプトの取得 {.unnumbered}
+
+::: {.panel-tabset group="os"}
+## Mac
+
+``` bash
+cd ~/repos/my-thesis-project
+gh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1 && cp -r _tdl/scripts/session_03 scripts/ && rm -rf _tdl
+code .
+```
+
+## Windows
+
+``` powershell
+cd ~/repos/my-thesis-project
+gh repo clone kjst-edu/thesis-data-lab _tdl -- --depth 1; Copy-Item _tdl\scripts\session_03 scripts\session_03 -Recurse -Force; Remove-Item _tdl -Recurse -Force
+code .
+```
+:::
+
+### 加工データの作成 {.unnumbered}
+
+`scripts/session_03/01-prepare_pwt_2023_oecd.py` は、第2回の加工スクリプトに OECD 加盟国 ISO コードのリストを足し、`is_oecd` 列（0/1 の整数）を追加します。
+
+```bash
+uv run scripts/session_03/01-prepare_pwt_2023_oecd.py
+```
+
+`data/pwt_2023_oecd.csv` ができます。
+
+```{python}
+#| label: setup
+#| echo: false
+# このノートのチャンクは、リポジトリ内の demo/ をプロジェクトルートとみなして実行する。
+# 学生は自分のプロジェクト直下で同じコードを動かす想定なので、コード本体は data/... のままで良い。
+import os
+os.chdir("demo")
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+
+df = pd.read_csv("data/pwt_2023_oecd.csv")
+df = df.dropna(subset=["rgdpna", "emp", "rnna", "hc"]).copy()
+df["gdp_per_worker"] = df["rgdpna"] / df["emp"]
+df["capital_per_worker"] = df["rnna"] / df["emp"]
+```
+
+### VS Code Chat にコードの説明を頼む {.unnumbered}
+
+`02-multiple_regression.py` を開いた状態で、説明してほしい範囲を選択し、VS Code のチャットパネルで次のように頼むと説明が返ってきます。
+
+> 選択した部分が何をしているか、Python 初学者向けに行ごとに説明してください。
+
+GitHub Copilot Chat なら、`/explain` のスラッシュコマンドでも同じことができます。
+
+穴埋め (`____`) の答えそのものを直接聞かないようにしてください。詰まったら、まずこのノートを、最後の手段として完成版 `demo/scripts/session_03/` を見てください。
+
+## [1] 単回帰の復習
+
+statsmodels では `smf.ols(...)` の第1引数に formula を文字列で渡します。文字列と回帰式の対応:
+
+| formula | 回帰式 |
+|:---|:---|
+| `y ~ x` | $y = \alpha + \beta x + \varepsilon$ |
+| `np.log(y) ~ x` | $\log y = \alpha + \beta x + \varepsilon$ |
+| `y ~ np.log(x)` | $y = \alpha + \beta \log x + \varepsilon$ |
+| `np.log(y) ~ np.log(x)` | $\log y = \alpha + \beta \log x + \varepsilon$ |
+
+: 単回帰の formula と回帰式の対応 {#tbl-formula-uni}
+
+`y ~ x` と書けば線形、`np.log(y)` などを挟めば log 変換が同時に適用されます。第2回と同じ log-log の単回帰を、**モデル定義 → `.fit()` → `.summary()`** の3段に分けて書きます。
+
+`np.log(capital_per_worker)` の係数 (coef) が、資本に関する産出弾力性に対応します。
+
+
+```{python}
+#| label: m1
+#| output: false
+import statsmodels.formula.api as smf
+
+# 1. モデルを定義する
+model1 = smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker)",
+    data=df,
+)
+
+# 2. 推定する
+m1 = model1.fit()
+
+# 3. 結果を見る
+print(m1.summary())
+```
+
+```{python}
+#| label: m1-html
+#| echo: false
+from IPython.display import HTML
+beta = f"{m1.params['np.log(capital_per_worker)']:.4f}"
+HTML(m1.summary().as_html().replace(beta, f'<mark>{beta}</mark>'))
+```
+
+
+
+::: callout-tip
+1, 2, 3 の手順は、linearmodels（パネル・操作変数）でも scikit-learn（機械学習）でも基本的に同じです。（以下のコードは実行できない）
+
+```python
+# linearmodels の例
+model = PanelOLS.from_formula("y ~ 1 + x + EntityEffects", data=df)
+result = model.fit()
+print(result.summary)
+
+# scikit-learn の例
+model = LinearRegression()
+model.fit(X, y)
+print(model.coef_, model.intercept_)
+```
+:::
+
+
+## [2] 重回帰: 人的資本を加える
+
+人的資本指数 `hc` を加えます。
+
+$$
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \varepsilon
+$$
+
+違うのは formula の右辺に項が増えることだけです。
+
+```{python}
+#| label: m2
+model2 = smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker) + np.log(hc)",
+    data=df,
+)
+m2 = model2.fit()
+print(m2.summary())
+```
+
+重回帰の係数は **「他の変数を一定としたときの効果」** として読みます。`hc` を入れたことで `log(K/L)` の係数の意味（条件づけ）が変わるので、単回帰のときから値も動きます。
+
+## 対数変換した係数の読み方
+
+| モデル | $x$ の係数 $\beta$ の解釈 |
+|:---|:---|
+| $y = \alpha + \beta x$ | $x$ が1単位増えると $y$ は $\beta$ 単位変わる |
+| $\log y = \alpha + \beta x$ | $x$ が1単位増えると $y$ は $100\beta$ % 変わる（半弾力性） |
+| $\log y = \alpha + \beta \log x$ | $x$ が 1 % 増えると $y$ は $\beta$ % 変わる（弾力性） |
+| $y = \alpha + \beta \log x$ | $x$ が 1 % 増えると $y$ は $\beta/100$ 単位変わる |
+| $\log y = \alpha + \beta D$（D は 0/1 ダミー） | $D=1$ のとき $y$ は近似で $100\beta$ % 高い |
+
+: 対数変換と係数の解釈 {#tbl-log-coef}
+
+ダミーの効果を厳密に出したいときは $\exp(\beta) - 1$ を使うと近似誤差を避けられます。
+
+## [3] ダミー変数: OECD 加盟国かどうか
+
+`is_oecd` は 0/1 の整数列なので、そのまま投入できます。
+
+$$
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \gamma \cdot \mathrm{is\_oecd} + \varepsilon
+$$
+
+```{python}
+#| label: m3
+model3 = smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker) + np.log(hc) + is_oecd",
+    data=df,
+)
+m3 = model3.fit()
+print(m3.summary())
+```
+
+`is_oecd` の係数 $\gamma$ は「他の変数を一定としたときの、OECD と非 OECD の $\log(y/L)$ の差」。被説明変数が log なので、$100 \cdot \gamma$ % のシフトとして読めます（@tbl-log-coef）。
+
+```{python}
+#| label: fig-m3-shift
+#| echo: false
+#| fig-cap: "ダミー変数の係数 $\\gamma$ は、回帰直線の **上下方向のシフト** に対応する。`log(hc)` をサンプル平均で固定したときの予測線。"
+log_hc_mean = np.log(df["hc"]).mean()
+log_k_grid = np.linspace(
+    np.log(df["capital_per_worker"]).min(),
+    np.log(df["capital_per_worker"]).max(),
+    50,
+)
+
+fig, ax = plt.subplots(figsize=(6.5, 4.5))
+for is_oecd, label, color in [(0, "non-OECD", "tab:blue"), (1, "OECD", "tab:orange")]:
+    sub = df[df["is_oecd"] == is_oecd]
+    ax.scatter(
+        np.log(sub["capital_per_worker"]),
+        np.log(sub["gdp_per_worker"]),
+        label=label, color=color, alpha=0.5, s=20,
+    )
+    log_y_pred = (
+        m3.params["Intercept"]
+        + m3.params["np.log(capital_per_worker)"] * log_k_grid
+        + m3.params["np.log(hc)"] * log_hc_mean
+        + m3.params["is_oecd"] * is_oecd
+    )
+    ax.plot(log_k_grid, log_y_pred, color=color, linewidth=2)
+
+ax.set_xlabel("log(capital per worker)")
+ax.set_ylabel("log(GDP per worker)")
+ax.legend()
+plt.show()
+```
+
+::: callout-warning
+## ダミー変数の罠
+すべての水準を 0/1 列として入れると intercept と完全共線になり推定できません。$k$ 水準なら $k-1$ 個入れます。後で出てくる `C(...)` を使えば自動で1水準を落としてくれます。
+:::
+
+## [4] 交差項: グループで効果は違うか
+
+「OECD では資本の生産弾力性そのものが違うのではないか」を試します。
+
+$$
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \gamma \cdot \mathrm{is\_oecd} + \delta \cdot \log(K/L) \times \mathrm{is\_oecd} + \varepsilon
+$$
+
+statsmodels では `A * B` と書くと `A + B + A:B` に展開されます（単独項を残し忘れないための省略記法）。
+
+```{python}
+#| label: m4
+model4 = smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker) * is_oecd + np.log(hc)",
+    data=df,
+)
+m4 = model4.fit()
+print(m4.summary())
+```
+
+| 係数 | 意味 |
+|:---|:---|
+| `np.log(capital_per_worker)` | 非 OECD での資本の生産弾力性 |
+| `is_oecd` | $\log(K/L) = 0$ のときの OECD と非 OECD の差（解釈は薄い） |
+| `np.log(capital_per_worker):is_oecd` | OECD − 非 OECD の弾力性の差 |
+
+: 交差項モデルの係数の読み方 {#tbl-interaction}
+
+OECD と非 OECD の弾力性そのものを見比べるには、係数を足し合わせます。
+
+```{python}
+#| label: m4-elasticity
+beta_non = m4.params["np.log(capital_per_worker)"]
+delta = m4.params["np.log(capital_per_worker):is_oecd"]
+print(f"非 OECD での資本弾力性 : {beta_non:.3f}")
+print(f"OECD での資本弾力性    : {beta_non + delta:.3f}")
+```
+
+```{python}
+#| label: fig-m4-slope
+#| echo: false
+#| fig-cap: "交差項の係数 $\\delta$ は、回帰直線の **傾きの違い** に対応する。`log(hc)` をサンプル平均で固定したときの予測線。"
+log_hc_mean = np.log(df["hc"]).mean()
+log_k_grid = np.linspace(
+    np.log(df["capital_per_worker"]).min(),
+    np.log(df["capital_per_worker"]).max(),
+    50,
+)
+
+fig, ax = plt.subplots(figsize=(6.5, 4.5))
+for is_oecd, label, color in [(0, "non-OECD", "tab:blue"), (1, "OECD", "tab:orange")]:
+    sub = df[df["is_oecd"] == is_oecd]
+    ax.scatter(
+        np.log(sub["capital_per_worker"]),
+        np.log(sub["gdp_per_worker"]),
+        label=label, color=color, alpha=0.5, s=20,
+    )
+    log_y_pred = (
+        m4.params["Intercept"]
+        + m4.params["np.log(capital_per_worker)"] * log_k_grid
+        + m4.params["np.log(hc)"] * log_hc_mean
+        + m4.params["is_oecd"] * is_oecd
+        + m4.params["np.log(capital_per_worker):is_oecd"] * log_k_grid * is_oecd
+    )
+    ax.plot(log_k_grid, log_y_pred, color=color, linewidth=2)
+
+ax.set_xlabel("log(capital per worker)")
+ax.set_ylabel("log(GDP per worker)")
+ax.legend()
+plt.show()
+```
+
+## patsy の formula 記法
+
+statsmodels の formula は内部で [patsy](https://patsy.readthedocs.io/) が解釈しています。卒論で頻出する記法をまとめます。
+
+| 記法 | 展開・意味 |
+|:---|:---|
+| `y ~ x1 + x2` | 加法的に並べる |
+| `y ~ x1 - 1` | intercept を外す |
+| `y ~ x1:x2` | 交差項のみ（単独項なし。意味が変わるので注意） |
+| `y ~ x1*x2` | `x1 + x2 + x1:x2` の省略形 |
+| `y ~ C(g)` | カテゴリ列 `g` をダミー化（最初の水準が参照群） |
+| `y ~ C(g, Treatment(reference="..."))` | 参照群を指定 |
+| `y ~ np.log(x)` | 任意の関数を式の中で適用できる |
+| `y ~ I(x**2)` | 計算式を式の中で書く（`I()` で囲んで保護） |
+
+: patsy formula の主な記法 {#tbl-patsy}
+
+`C(g)` の例（地域ダミー）:
+
+```python
+smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker) + C(region)",
+    data=df,
+)
+```
+
+`I()` の例（多項式項）:
+
+```python
+smf.ols(
+    "np.log(gdp_per_worker) ~ np.log(capital_per_worker) + I(np.log(capital_per_worker)**2)",
+    data=df,
+)
+```
+
+::: callout-tip
+複雑な変換を式の中に書きすぎると formula が長く読みにくくなります。式が膨らんできたら、変換した列を `df` にあらかじめ作っておくほうが見通しがよくなります。
+:::
+
+## [5] モデル比較
+
+説明変数を増やせば $R^2$ は必ず上がるので、当てはまりは **Adjusted $R^2$** で見ます。
+
+```{python}
+#| label: tbl-compare
+pd.DataFrame({
+    "model":   ["単回帰", "重回帰", "+ ダミー", "+ 交差項"],
+    "n":       [int(m.nobs) for m in (m1, m2, m3, m4)],
+    "R^2":     [m.rsquared for m in (m1, m2, m3, m4)],
+    "Adj.R^2": [m.rsquared_adj for m in (m1, m2, m3, m4)],
+}).round(3)
+```
+
+::: callout-important
+## モデルは結果を見てから選ばない
+
+複数のモデルを並べたとき、「Adjusted $R^2$ が一番大きいものを採用」「自分のストーリーに合うものを採用」といった事後的な選び方は、経済分析では適切でないことが多い。**理論や先行研究で primary specification を先に決め、それ以外は sensitivity check として並べる**のが原則。
+
+$R^2$ や p 値・有意性だけで機械的に判断せず、係数の符号と大きさが事前の見立てと整合するか、整合しないとき何が起きていそうかを毎回議論する。
+:::
+
+## 自習に回すこと
+
+- 多重共線性の診断（VIF: `statsmodels.stats.outliers_influence.variance_inflation_factor`）
+- ロバスト標準誤差: `.fit(cov_type="HC3")` など
+- 回帰表をまとめて出す: `statsmodels.iolib.summary2.summary_col`
+
+## 対応する実行例
+
+- `scripts/session_03/01-prepare_pwt_2023_oecd.py` — OECD ダミー付きの 2023 年クロスセクションを `data/pwt_2023_oecd.csv` に保存
+- `scripts/session_03/02-multiple_regression.py` — 重回帰・ダミー・交差項（穴埋め）
+
+完成版の参考は `demo/scripts/session_03/` にあります。

@@ -208,3 +208,9 @@ __marimo__/
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Quarto preview output (we publish docs/ instead)
+/_site/
+
+# VS Code multi-folder workspace (paths are personal)
+*.code-workspace

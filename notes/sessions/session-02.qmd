@@ -4,6 +4,15 @@ execute:
   echo: true
 ---
 
+```{python}
+#| echo: false
+#| label: chdir-to-demo
+# このノートのチャンクは、リポジトリ内の demo/ をプロジェクトルートとみなして実行する。
+# 学生は自分のプロジェクト直下で同じコードを動かす想定なので、コード本体は data/... のままで良い。
+import os
+os.chdir("demo")
+```
+
 [スクリプト](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_02)
 
 ## この回のねらい

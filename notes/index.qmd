@@ -21,7 +21,7 @@ title: "データ分析ノート"
 | --- | --- | --- | --- |
 | [第1回](sessions/session-01.qmd) | 卒論の分析作法と再現可能な作業フロー | [コード](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_01) | 2026-04-17 |
 | [第2回](sessions/session-02.qmd) | 記述統計・散布図・単回帰への入口 | [コード](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_02) | 2026-04-28 |
-| 第3回案 | 重回帰分析を Python で実行する | - | - |
+| [第3回](sessions/session-03.qmd) | 重回帰・対数変換・ダミー・交差項 | [コード](https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_03) | 2026-05-08 |
 | 第4回案 | 回帰表と図表を卒論向けに整える | - | - |
 | 第5回案 | 固定効果モデルへの入口 | - | - |
 | 第6回案 | 時系列データの基本 | - | - |
