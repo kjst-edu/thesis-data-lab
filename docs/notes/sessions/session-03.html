@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>第3回 重回帰分析の入口 – 卒論準備のためのデータ分析ノート</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a25fe14d71fb15effab06e6c3a28be36.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../assets/styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">卒論準備のためのデータ分析ノート</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="サーチ"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="ナビゲーションを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../notes/index.html" aria-current="page"> 
+<span class="menu-text">講義ノート</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/sessions/session-01.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/sessions/session-03.html">第3回</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Notes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/sessions/session-01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第1回</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/sessions/session-02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第2回</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/sessions/session-03.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">第3回</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#この回のねらい" id="toc-この回のねらい" class="nav-link active" data-scroll-target="#この回のねらい"><span class="header-section-number">1</span> この回のねらい</a></li>
+  <li><a href="#使うデータ" id="toc-使うデータ" class="nav-link" data-scroll-target="#使うデータ"><span class="header-section-number">2</span> 使うデータ</a>
+  <ul class="collapse">
+  <li><a href="#スクリプトの取得" id="toc-スクリプトの取得" class="nav-link" data-scroll-target="#スクリプトの取得">スクリプトの取得</a></li>
+  <li><a href="#加工データの作成" id="toc-加工データの作成" class="nav-link" data-scroll-target="#加工データの作成">加工データの作成</a></li>
+  <li><a href="#vs-code-chat-にコードの説明を頼む" id="toc-vs-code-chat-にコードの説明を頼む" class="nav-link" data-scroll-target="#vs-code-chat-にコードの説明を頼む">VS Code Chat にコードの説明を頼む</a></li>
+  </ul></li>
+  <li><a href="#単回帰の復習" id="toc-単回帰の復習" class="nav-link" data-scroll-target="#単回帰の復習"><span class="header-section-number">3</span> [1] 単回帰の復習</a></li>
+  <li><a href="#重回帰-人的資本を加える" id="toc-重回帰-人的資本を加える" class="nav-link" data-scroll-target="#重回帰-人的資本を加える"><span class="header-section-number">4</span> [2] 重回帰: 人的資本を加える</a></li>
+  <li><a href="#対数変換した係数の読み方" id="toc-対数変換した係数の読み方" class="nav-link" data-scroll-target="#対数変換した係数の読み方"><span class="header-section-number">5</span> 対数変換した係数の読み方</a></li>
+  <li><a href="#ダミー変数-oecd-加盟国かどうか" id="toc-ダミー変数-oecd-加盟国かどうか" class="nav-link" data-scroll-target="#ダミー変数-oecd-加盟国かどうか"><span class="header-section-number">6</span> [3] ダミー変数: OECD 加盟国かどうか</a></li>
+  <li><a href="#交差項-グループで効果は違うか" id="toc-交差項-グループで効果は違うか" class="nav-link" data-scroll-target="#交差項-グループで効果は違うか"><span class="header-section-number">7</span> [4] 交差項: グループで効果は違うか</a></li>
+  <li><a href="#patsy-の-formula-記法" id="toc-patsy-の-formula-記法" class="nav-link" data-scroll-target="#patsy-の-formula-記法"><span class="header-section-number">8</span> patsy の formula 記法</a></li>
+  <li><a href="#モデル比較" id="toc-モデル比較" class="nav-link" data-scroll-target="#モデル比較"><span class="header-section-number">9</span> [5] モデル比較</a></li>
+  <li><a href="#自習に回すこと" id="toc-自習に回すこと" class="nav-link" data-scroll-target="#自習に回すこと"><span class="header-section-number">10</span> 自習に回すこと</a></li>
+  <li><a href="#対応する実行例" id="toc-対応する実行例" class="nav-link" data-scroll-target="#対応する実行例"><span class="header-section-number">11</span> 対応する実行例</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/sessions/session-01.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/sessions/session-03.html">第3回</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">第3回 重回帰分析の入口</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="https://github.com/kjst-edu/thesis-data-lab/tree/main/scripts/session_03">スクリプト</a></p>
+<section id="この回のねらい" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="この回のねらい"><span class="header-section-number">1</span> この回のねらい</h2>
+<p>第2回の単回帰を、重回帰・対数変換・ダミー変数・交差項に拡張します。statsmodels に限らず、回帰モデル系のライブラリ（linearmodels、scikit-learn など）は <strong>「モデル定義 → <code>.fit()</code> → 結果を見る」</strong> の流れで使います。今回はこのパターンに慣れます。</p>
+<ol type="1">
+<li>単回帰から重回帰へ</li>
+<li>対数変換した係数の読み方</li>
+<li>ダミー変数</li>
+<li>交差項</li>
+<li>patsy の formula 記法</li>
+</ol>
+<p>実行コードは <code>scripts/session_03/02-multiple_regression.py</code> に <strong>穴埋め</strong> で置いてあります。VS Code で開き、<code>____</code> を埋めながら順に実行してください。このノートには答えと解釈が載っています。詰まったらここを見てください。</p>
+</section>
+<section id="使うデータ" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="使うデータ"><span class="header-section-number">2</span> 使うデータ</h2>
+<p>第2回と同じ PWT 11.0 の 2023 年クロスセクションに、<strong>OECD 加盟国かどうか</strong>を示すダミー変数 <code>is_oecd</code> を追加して使います。</p>
+<section id="スクリプトの取得" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="スクリプトの取得">スクリプトの取得</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="os">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Mac</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Windows</a></li></ul>
+<div class="tab-content" data-group="os">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/repos/my-thesis-project</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> repo clone kjst-edu/thesis-data-lab _tdl <span class="at">--</span> <span class="at">--depth</span> 1 <span class="kw">&amp;&amp;</span> <span class="fu">cp</span> <span class="at">-r</span> _tdl/scripts/session_03 scripts/ <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> <span class="at">-rf</span> _tdl</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">code</span> .</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> <span class="op">~/</span>repos<span class="op">/</span>my-thesis-project</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gh repo clone kjst-edu<span class="op">/</span>thesis-data-lab _tdl <span class="op">--</span> <span class="op">--</span>depth <span class="dv">1</span><span class="op">;</span> <span class="fu">Copy-Item</span> _tdl\scripts\session_03 scripts\session_03 <span class="op">-</span>Recurse <span class="op">-</span>Force<span class="op">;</span> <span class="fu">Remove-Item</span> _tdl <span class="op">-</span>Recurse <span class="op">-</span>Force</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>code <span class="op">.</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="加工データの作成" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="加工データの作成">加工データの作成</h3>
+<p><code>scripts/session_03/01-prepare_pwt_2023_oecd.py</code> は、第2回の加工スクリプトに OECD 加盟国 ISO コードのリストを足し、<code>is_oecd</code> 列（0/1 の整数）を追加します。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run scripts/session_03/01-prepare_pwt_2023_oecd.py</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>data/pwt_2023_oecd.csv</code> ができます。</p>
+</section>
+<section id="vs-code-chat-にコードの説明を頼む" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="vs-code-chat-にコードの説明を頼む">VS Code Chat にコードの説明を頼む</h3>
+<p><code>02-multiple_regression.py</code> を開いた状態で、説明してほしい範囲を選択し、VS Code のチャットパネルで次のように頼むと説明が返ってきます。</p>
+<blockquote class="blockquote">
+<p>選択した部分が何をしているか、Python 初学者向けに行ごとに説明してください。</p>
+</blockquote>
+<p>GitHub Copilot Chat なら、<code>/explain</code> のスラッシュコマンドでも同じことができます。</p>
+<p>穴埋め (<code>____</code>) の答えそのものを直接聞かないようにしてください。詰まったら、まずこのノートを、最後の手段として完成版 <code>demo/scripts/session_03/</code> を見てください。</p>
+</section>
+</section>
+<section id="単回帰の復習" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="単回帰の復習"><span class="header-section-number">3</span> [1] 単回帰の復習</h2>
+<p>statsmodels では <code>smf.ols(...)</code> の第1引数に formula を文字列で渡します。文字列と回帰式の対応:</p>
+<div id="tbl-formula-uni" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-formula-uni-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;1: 単回帰の formula と回帰式の対応
+</figcaption>
+<div aria-describedby="tbl-formula-uni-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">formula</th>
+<th style="text-align: left;">回帰式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ x</code></td>
+<td style="text-align: left;"><span class="math inline">\(y = \alpha + \beta x + \varepsilon\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>np.log(y) ~ x</code></td>
+<td style="text-align: left;"><span class="math inline">\(\log y = \alpha + \beta x + \varepsilon\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ np.log(x)</code></td>
+<td style="text-align: left;"><span class="math inline">\(y = \alpha + \beta \log x + \varepsilon\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>np.log(y) ~ np.log(x)</code></td>
+<td style="text-align: left;"><span class="math inline">\(\log y = \alpha + \beta \log x + \varepsilon\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><code>y ~ x</code> と書けば線形、<code>np.log(y)</code> などを挟めば log 変換が同時に適用されます。第2回と同じ log-log の単回帰を、<strong>モデル定義 → <code>.fit()</code> → <code>.summary()</code></strong> の3段に分けて書きます。</p>
+<p><code>np.log(capital_per_worker)</code> の係数 (coef) が、資本に関する産出弾力性に対応します。</p>
+<div id="m1" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. モデルを定義する</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>model1 <span class="op">=</span> smf.ols(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker)"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 推定する</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> model1.fit()</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 結果を見る</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m1.summary())</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-m1-html" class="cell" data-execution_count="3">
+<div id="m1-html" class="cell-output cell-output-display" data-execution_count="3">
+<table class="simpletable caption-top table table-sm table-striped small">
+<caption>OLS Regression Results</caption>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Dep. Variable:</th>
+<td>np.log(gdp_per_worker)</td>
+<th data-quarto-table-cell-role="th">R-squared:</th>
+<td>0.850</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Model:</th>
+<td>OLS</td>
+<th data-quarto-table-cell-role="th">Adj. R-squared:</th>
+<td>0.849</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Method:</th>
+<td>Least Squares</td>
+<th data-quarto-table-cell-role="th">F-statistic:</th>
+<td>804.7</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Date:</th>
+<td>Fri, 08 May 2026</td>
+<th data-quarto-table-cell-role="th">Prob (F-statistic):</th>
+<td>2.29e-60</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Time:</th>
+<td>16:14:23</td>
+<th data-quarto-table-cell-role="th">Log-Likelihood:</th>
+<td>-83.647</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">No. Observations:</th>
+<td>144</td>
+<th data-quarto-table-cell-role="th">AIC:</th>
+<td>171.3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Df Residuals:</th>
+<td>142</td>
+<th data-quarto-table-cell-role="th">BIC:</th>
+<td>177.2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Df Model:</th>
+<td>1</td>
+<th data-quarto-table-cell-role="th"></th>
+<td></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Covariance Type:</th>
+<td>nonrobust</td>
+<th data-quarto-table-cell-role="th"></th>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<table class="simpletable caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td></td>
+<th data-quarto-table-cell-role="th">coef</th>
+<th data-quarto-table-cell-role="th">std err</th>
+<th data-quarto-table-cell-role="th">t</th>
+<th data-quarto-table-cell-role="th">P&gt;|t|</th>
+<th data-quarto-table-cell-role="th">[0.025</th>
+<th data-quarto-table-cell-role="th">0.975]</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Intercept</th>
+<td>0.9691</td>
+<td>0.337</td>
+<td>2.875</td>
+<td>0.005</td>
+<td>0.303</td>
+<td>1.636</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">np.log(capital_per_worker)</th>
+<td><mark>0.7977</mark></td>
+<td>0.028</td>
+<td>28.368</td>
+<td>0.000</td>
+<td>0.742</td>
+<td>0.853</td>
+</tr>
+</tbody>
+</table>
+
+
+<table class="simpletable caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Omnibus:</th>
+<td>53.977</td>
+<th data-quarto-table-cell-role="th">Durbin-Watson:</th>
+<td>2.022</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Prob(Omnibus):</th>
+<td>0.000</td>
+<th data-quarto-table-cell-role="th">Jarque-Bera (JB):</th>
+<td>361.817</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Skew:</th>
+<td>-1.108</td>
+<th data-quarto-table-cell-role="th">Prob(JB):</th>
+<td>2.71e-79</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Kurtosis:</th>
+<td>10.443</td>
+<th data-quarto-table-cell-role="th">Cond. No.</th>
+<td>112.</td>
+</tr>
+</tbody>
+</table>
+<br><br>Notes:<br>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ヒント
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>1, 2, 3 の手順は、linearmodels（パネル・操作変数）でも scikit-learn（機械学習）でも基本的に同じです。（以下のコードは実行できない）</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># linearmodels の例</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> PanelOLS.from_formula(<span class="st">"y ~ 1 + x + EntityEffects"</span>, data<span class="op">=</span>df)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> model.fit()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.summary)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># scikit-learn の例</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.coef_, model.intercept_)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</section>
+<section id="重回帰-人的資本を加える" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="重回帰-人的資本を加える"><span class="header-section-number">4</span> [2] 重回帰: 人的資本を加える</h2>
+<p>人的資本指数 <code>hc</code> を加えます。</p>
+<p><span class="math display">\[
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \varepsilon
+\]</span></p>
+<p>違うのは formula の右辺に項が増えることだけです。</p>
+<div id="m2" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="op">=</span> smf.ols(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker) + np.log(hc)"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>m2 <span class="op">=</span> model2.fit()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m2.summary())</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              OLS Regression Results                              
+==================================================================================
+Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.854
+Model:                                OLS   Adj. R-squared:                  0.852
+Method:                     Least Squares   F-statistic:                     412.8
+Date:                    Fri, 08 May 2026   Prob (F-statistic):           1.14e-59
+Time:                            16:14:23   Log-Likelihood:                -81.637
+No. Observations:                     144   AIC:                             169.3
+Df Residuals:                         141   BIC:                             178.2
+Df Model:                               2                                         
+Covariance Type:                nonrobust                                         
+==============================================================================================
+                                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------
+Intercept                      1.3805      0.392      3.521      0.001       0.605       2.156
+np.log(capital_per_worker)     0.7283      0.045     16.360      0.000       0.640       0.816
+np.log(hc)                     0.4207      0.211      1.998      0.048       0.004       0.837
+==============================================================================
+Omnibus:                       74.764   Durbin-Watson:                   1.966
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              650.221
+Skew:                          -1.590   Prob(JB):                    6.40e-142
+Kurtosis:                      12.913   Cond. No.                         139.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<p>重回帰の係数は <strong>「他の変数を一定としたときの効果」</strong> として読みます。<code>hc</code> を入れたことで <code>log(K/L)</code> の係数の意味（条件づけ）が変わるので、単回帰のときから値も動きます。</p>
+</section>
+<section id="対数変換した係数の読み方" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="対数変換した係数の読み方"><span class="header-section-number">5</span> 対数変換した係数の読み方</h2>
+<div id="tbl-log-coef" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-log-coef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;2: 対数変換と係数の解釈
+</figcaption>
+<div aria-describedby="tbl-log-coef-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">モデル</th>
+<th style="text-align: left;"><span class="math inline">\(x\)</span> の係数 <span class="math inline">\(\beta\)</span> の解釈</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(y = \alpha + \beta x\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x\)</span> が1単位増えると <span class="math inline">\(y\)</span> は <span class="math inline">\(\beta\)</span> 単位変わる</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\log y = \alpha + \beta x\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x\)</span> が1単位増えると <span class="math inline">\(y\)</span> は <span class="math inline">\(100\beta\)</span> % 変わる（半弾力性）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\log y = \alpha + \beta \log x\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x\)</span> が 1 % 増えると <span class="math inline">\(y\)</span> は <span class="math inline">\(\beta\)</span> % 変わる（弾力性）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(y = \alpha + \beta \log x\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(x\)</span> が 1 % 増えると <span class="math inline">\(y\)</span> は <span class="math inline">\(\beta/100\)</span> 単位変わる</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\log y = \alpha + \beta D\)</span>（D は 0/1 ダミー）</td>
+<td style="text-align: left;"><span class="math inline">\(D=1\)</span> のとき <span class="math inline">\(y\)</span> は近似で <span class="math inline">\(100\beta\)</span> % 高い</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>ダミーの効果を厳密に出したいときは <span class="math inline">\(\exp(\beta) - 1\)</span> を使うと近似誤差を避けられます。</p>
+</section>
+<section id="ダミー変数-oecd-加盟国かどうか" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="ダミー変数-oecd-加盟国かどうか"><span class="header-section-number">6</span> [3] ダミー変数: OECD 加盟国かどうか</h2>
+<p><code>is_oecd</code> は 0/1 の整数列なので、そのまま投入できます。</p>
+<p><span class="math display">\[
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \gamma \cdot \mathrm{is\_oecd} + \varepsilon
+\]</span></p>
+<div id="m3" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="op">=</span> smf.ols(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker) + np.log(hc) + is_oecd"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>m3 <span class="op">=</span> model3.fit()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m3.summary())</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              OLS Regression Results                              
+==================================================================================
+Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.857
+Model:                                OLS   Adj. R-squared:                  0.854
+Method:                     Least Squares   F-statistic:                     278.7
+Date:                    Fri, 08 May 2026   Prob (F-statistic):           8.02e-59
+Time:                            16:14:23   Log-Likelihood:                -80.417
+No. Observations:                     144   AIC:                             168.8
+Df Residuals:                         140   BIC:                             180.7
+Df Model:                               3                                         
+Covariance Type:                nonrobust                                         
+==============================================================================================
+                                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------
+Intercept                      1.5970      0.414      3.853      0.000       0.778       2.416
+np.log(capital_per_worker)     0.7124      0.045     15.669      0.000       0.623       0.802
+np.log(hc)                     0.3528      0.214      1.648      0.102      -0.070       0.776
+is_oecd                        0.1507      0.097      1.546      0.124      -0.042       0.343
+==============================================================================
+Omnibus:                       74.638   Durbin-Watson:                   1.986
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              672.861
+Skew:                          -1.571   Prob(JB):                    7.76e-147
+Kurtosis:                      13.113   Cond. No.                         145.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<p><code>is_oecd</code> の係数 <span class="math inline">\(\gamma\)</span> は「他の変数を一定としたときの、OECD と非 OECD の <span class="math inline">\(\log(y/L)\)</span> の差」。被説明変数が log なので、<span class="math inline">\(100 \cdot \gamma\)</span> % のシフトとして読めます（<a href="#tbl-log-coef" class="quarto-xref">表&nbsp;2</a>）。</p>
+<div id="cell-fig-m3-shift" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div id="fig-m3-shift" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m3-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-03_files/figure-html/fig-m3-shift-output-1.png" width="547" height="393" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m3-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;1: ダミー変数の係数 <span class="math inline">\(\gamma\)</span> は、回帰直線の <strong>上下方向のシフト</strong> に対応する。<code>log(hc)</code> をサンプル平均で固定したときの予測線。
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">警告</span>ダミー変数の罠
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>すべての水準を 0/1 列として入れると intercept と完全共線になり推定できません。<span class="math inline">\(k\)</span> 水準なら <span class="math inline">\(k-1\)</span> 個入れます。後で出てくる <code>C(...)</code> を使えば自動で1水準を落としてくれます。</p>
+</div>
+</div>
+</section>
+<section id="交差項-グループで効果は違うか" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="交差項-グループで効果は違うか"><span class="header-section-number">7</span> [4] 交差項: グループで効果は違うか</h2>
+<p>「OECD では資本の生産弾力性そのものが違うのではないか」を試します。</p>
+<p><span class="math display">\[
+\log(y/L) = \alpha + \beta_1 \log(K/L) + \beta_2 \log(\mathrm{hc}) + \gamma \cdot \mathrm{is\_oecd} + \delta \cdot \log(K/L) \times \mathrm{is\_oecd} + \varepsilon
+\]</span></p>
+<p>statsmodels では <code>A * B</code> と書くと <code>A + B + A:B</code> に展開されます（単独項を残し忘れないための省略記法）。</p>
+<div id="m4" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model4 <span class="op">=</span> smf.ols(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker) * is_oecd + np.log(hc)"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>m4 <span class="op">=</span> model4.fit()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m4.summary())</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              OLS Regression Results                              
+==================================================================================
+Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.857
+Model:                                OLS   Adj. R-squared:                  0.853
+Method:                     Least Squares   F-statistic:                     208.4
+Date:                    Fri, 08 May 2026   Prob (F-statistic):           1.14e-57
+Time:                            16:14:23   Log-Likelihood:                -80.161
+No. Observations:                     144   AIC:                             170.3
+Df Residuals:                         139   BIC:                             185.2
+Df Model:                               4                                         
+Covariance Type:                nonrobust                                         
+======================================================================================================
+                                         coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------
+Intercept                              1.5309      0.426      3.596      0.000       0.689       2.373
+np.log(capital_per_worker)             0.7191      0.047     15.456      0.000       0.627       0.811
+is_oecd                                1.6153      2.083      0.776      0.439      -2.503       5.733
+np.log(capital_per_worker):is_oecd    -0.1127      0.160     -0.704      0.483      -0.429       0.204
+np.log(hc)                             0.3411      0.215      1.585      0.115      -0.084       0.766
+==============================================================================
+Omnibus:                       73.225   Durbin-Watson:                   1.976
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              658.356
+Skew:                          -1.532   Prob(JB):                    1.10e-143
+Kurtosis:                      13.017   Cond. No.                         746.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<div id="tbl-interaction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-interaction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;3: 交差項モデルの係数の読み方
+</figcaption>
+<div aria-describedby="tbl-interaction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">係数</th>
+<th style="text-align: left;">意味</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>np.log(capital_per_worker)</code></td>
+<td style="text-align: left;">非 OECD での資本の生産弾力性</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>is_oecd</code></td>
+<td style="text-align: left;"><span class="math inline">\(\log(K/L) = 0\)</span> のときの OECD と非 OECD の差（解釈は薄い）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>np.log(capital_per_worker):is_oecd</code></td>
+<td style="text-align: left;">OECD − 非 OECD の弾力性の差</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>OECD と非 OECD の弾力性そのものを見比べるには、係数を足し合わせます。</p>
+<div id="m4-elasticity" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>beta_non <span class="op">=</span> m4.params[<span class="st">"np.log(capital_per_worker)"</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> m4.params[<span class="st">"np.log(capital_per_worker):is_oecd"</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"非 OECD での資本弾力性 : </span><span class="sc">{</span>beta_non<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"OECD での資本弾力性    : </span><span class="sc">{</span>beta_non <span class="op">+</span> delta<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>非 OECD での資本弾力性 : 0.719
+OECD での資本弾力性    : 0.606</code></pre>
+</div>
+</div>
+<div id="cell-fig-m4-slope" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display">
+<div id="fig-m4-slope" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-m4-slope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="session-03_files/figure-html/fig-m4-slope-output-1.png" width="547" height="393" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-m4-slope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;2: 交差項の係数 <span class="math inline">\(\delta\)</span> は、回帰直線の <strong>傾きの違い</strong> に対応する。<code>log(hc)</code> をサンプル平均で固定したときの予測線。
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="patsy-の-formula-記法" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="patsy-の-formula-記法"><span class="header-section-number">8</span> patsy の formula 記法</h2>
+<p>statsmodels の formula は内部で <a href="https://patsy.readthedocs.io/">patsy</a> が解釈しています。卒論で頻出する記法をまとめます。</p>
+<div id="tbl-patsy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-patsy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;4: patsy formula の主な記法
+</figcaption>
+<div aria-describedby="tbl-patsy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">記法</th>
+<th style="text-align: left;">展開・意味</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ x1 + x2</code></td>
+<td style="text-align: left;">加法的に並べる</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>y ~ x1 - 1</code></td>
+<td style="text-align: left;">intercept を外す</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ x1:x2</code></td>
+<td style="text-align: left;">交差項のみ（単独項なし。意味が変わるので注意）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>y ~ x1*x2</code></td>
+<td style="text-align: left;"><code>x1 + x2 + x1:x2</code> の省略形</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ C(g)</code></td>
+<td style="text-align: left;">カテゴリ列 <code>g</code> をダミー化（最初の水準が参照群）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>y ~ C(g, Treatment(reference="..."))</code></td>
+<td style="text-align: left;">参照群を指定</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>y ~ np.log(x)</code></td>
+<td style="text-align: left;">任意の関数を式の中で適用できる</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>y ~ I(x**2)</code></td>
+<td style="text-align: left;">計算式を式の中で書く（<code>I()</code> で囲んで保護）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><code>C(g)</code> の例（地域ダミー）:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>smf.ols(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker) + C(region)"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>I()</code> の例（多項式項）:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>smf.ols(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker) + I(np.log(capital_per_worker)**2)"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ヒント
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>複雑な変換を式の中に書きすぎると formula が長く読みにくくなります。式が膨らんできたら、変換した列を <code>df</code> にあらかじめ作っておくほうが見通しがよくなります。</p>
+</div>
+</div>
+</section>
+<section id="モデル比較" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="モデル比較"><span class="header-section-number">9</span> [5] モデル比較</h2>
+<p>説明変数を増やせば <span class="math inline">\(R^2\)</span> は必ず上がるので、当てはまりは <strong>Adjusted <span class="math inline">\(R^2\)</span></strong> で見ます。</p>
+<div class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"model"</span>:   [<span class="st">"単回帰"</span>, <span class="st">"重回帰"</span>, <span class="st">"+ ダミー"</span>, <span class="st">"+ 交差項"</span>],</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"n"</span>:       [<span class="bu">int</span>(m.nobs) <span class="cf">for</span> m <span class="kw">in</span> (m1, m2, m3, m4)],</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"R^2"</span>:     [m.rsquared <span class="cf">for</span> m <span class="kw">in</span> (m1, m2, m3, m4)],</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Adj.R^2"</span>: [m.rsquared_adj <span class="cf">for</span> m <span class="kw">in</span> (m1, m2, m3, m4)],</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>}).<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-compare" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="10">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;5
+</figcaption>
+<div aria-describedby="tbl-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">R^2</th>
+<th data-quarto-table-cell-role="th">Adj.R^2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>単回帰</td>
+<td>144</td>
+<td>0.850</td>
+<td>0.849</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>重回帰</td>
+<td>144</td>
+<td>0.854</td>
+<td>0.852</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>+ ダミー</td>
+<td>144</td>
+<td>0.857</td>
+<td>0.854</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>+ 交差項</td>
+<td>144</td>
+<td>0.857</td>
+<td>0.853</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span>モデルは結果を見てから選ばない
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>複数のモデルを並べたとき、「Adjusted <span class="math inline">\(R^2\)</span> が一番大きいものを採用」「自分のストーリーに合うものを採用」といった事後的な選び方は、経済分析では適切でないことが多い。<strong>理論や先行研究で primary specification を先に決め、それ以外は sensitivity check として並べる</strong>のが原則。</p>
+<p><span class="math inline">\(R^2\)</span> や p 値・有意性だけで機械的に判断せず、係数の符号と大きさが事前の見立てと整合するか、整合しないとき何が起きていそうかを毎回議論する。</p>
+</div>
+</div>
+</section>
+<section id="自習に回すこと" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="自習に回すこと"><span class="header-section-number">10</span> 自習に回すこと</h2>
+<ul>
+<li>多重共線性の診断（VIF: <code>statsmodels.stats.outliers_influence.variance_inflation_factor</code>）</li>
+<li>ロバスト標準誤差: <code>.fit(cov_type="HC3")</code> など</li>
+<li>回帰表をまとめて出す: <code>statsmodels.iolib.summary2.summary_col</code></li>
+</ul>
+</section>
+<section id="対応する実行例" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="対応する実行例"><span class="header-section-number">11</span> 対応する実行例</h2>
+<ul>
+<li><code>scripts/session_03/01-prepare_pwt_2023_oecd.py</code> — OECD ダミー付きの 2023 年クロスセクションを <code>data/pwt_2023_oecd.csv</code> に保存</li>
+<li><code>scripts/session_03/02-multiple_regression.py</code> — 重回帰・ダミー・交差項（穴埋め）</li>
+</ul>
+<p>完成版の参考は <code>demo/scripts/session_03/</code> にあります。</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "コピーしました");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "コピーしました");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

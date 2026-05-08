@@ -221,6 +221,12 @@ window.Quarto = {
  <span class="menu-text">第2回</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/sessions/session-03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">第3回</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -464,7 +470,7 @@ window.Quarto = {
 </figure>
 </div>
 <p>卒論でも、扱うデータごとにこうした表を <code>data/</code> フォルダにメモとして残しておくと、変数の取り違えや単位の勘違いを防げます。</p>
-<div id="cell-load" class="cell" data-execution_count="1">
+<div id="cell-load" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
@@ -472,7 +478,7 @@ window.Quarto = {
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/pwt_2023.csv"</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="load" class="cell-output cell-output-display" data-execution_count="14">
+<div id="load" class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -581,9 +587,9 @@ window.Quarto = {
 <section id="欠損値を確認する" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="欠損値を確認する">[2] 欠損値を確認する</h3>
 <p>記述統計に進む前に、各列の欠損が何件あるかを確認しておきます。<code>DataFrame.isna().sum()</code> で列ごとの NaN 件数が出せます。</p>
-<div id="cell-missing" class="cell" data-execution_count="2">
+<div id="cell-missing" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="missing" class="cell-output cell-output-display" data-execution_count="15">
+<div id="missing" class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>countrycode     0
 country         0
 year            0
@@ -613,14 +619,14 @@ dtype: int64</code></pre>
 <p>どの選択肢を選んでも、サンプルは何らかの形で偏ります。卒論では「なぜその処理を選んだか」「結果として残ったのはどんな国か」を本文に書き残しておくと、後の議論や反例の説明がしやすくなります。</p>
 <p>今回は教材なので、最も単純な「行を落とす」を採ります。<code>rgdpna</code>、<code>emp</code>、<code>rnna</code>、<code>hc</code> のいずれかに欠損がある国を分析サンプルから外します（<code>hc</code> は後段のペアプロットで使うので一緒に落としておきます）。</p>
 <p>どの国が落ちるか見ておきます。</p>
-<div id="cell-dropped" class="cell" data-execution_count="3">
+<div id="cell-dropped" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> df[[<span class="st">"rgdpna"</span>, <span class="st">"emp"</span>, <span class="st">"rnna"</span>, <span class="st">"hc"</span>]].isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"落ちる国数: </span><span class="sc">{</span>mask<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df.loc[mask, [<span class="st">"countrycode"</span>, <span class="st">"country"</span>, <span class="st">"pop"</span>]].sort_values(<span class="st">"pop"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>落ちる国数: 41</code></pre>
 </div>
-<div id="dropped" class="cell-output cell-output-display" data-execution_count="16">
+<div id="dropped" class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -903,12 +909,12 @@ dtype: int64</code></pre>
 <section id="分析用の変数を作る" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="分析用の変数を作る">[3] 分析用の変数を作る</h3>
 <p>欠損行を落として、対数と労働者あたり指標を計算します。</p>
-<div id="cell-derive" class="cell" data-execution_count="4">
+<div id="cell-derive" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">"rgdpna"</span>, <span class="st">"emp"</span>, <span class="st">"rnna"</span>, <span class="st">"hc"</span>]).copy()</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"gdp_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rgdpna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"capital_per_worker"</span>] <span class="op">=</span> df[<span class="st">"rnna"</span>] <span class="op">/</span> df[<span class="st">"emp"</span>]</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df.shape</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="derive" class="cell-output cell-output-display" data-execution_count="17">
+<div id="derive" class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>(144, 12)</code></pre>
 </div>
 </div>
@@ -916,9 +922,9 @@ dtype: int64</code></pre>
 <section id="記述統計量を出す" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="記述統計量を出す">[4] 記述統計量を出す</h3>
 <p>件数・平均・標準偏差・最小値・最大値を確認します。pandas の <code>DataFrame.describe()</code> で一括して見られます。</p>
-<div id="cell-describe" class="cell" data-execution_count="5">
+<div id="cell-describe" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"gdp_per_worker"</span>, <span class="st">"capital_per_worker"</span>, <span class="st">"hc"</span>]].describe().<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="describe" class="cell-output cell-output-display" data-execution_count="18">
+<div id="describe" class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1040,7 +1046,7 @@ dtype: int64</code></pre>
 <section id="ヒストグラム" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="ヒストグラム">ヒストグラム</h4>
 <p>各変数の分布の形（左右非対称、二峰性、極端な裾）を見ます。</p>
-<div id="cell-fig-hist-gdp" class="cell" data-execution_count="6">
+<div id="cell-fig-hist-gdp" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"gdp_per_worker"</span>, bins<span class="op">=</span><span class="dv">20</span>, ax<span class="op">=</span>ax)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1058,7 +1064,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>対数軸でも見ます。</p>
-<div id="cell-fig-hist-gdp-log" class="cell" data-execution_count="7">
+<div id="cell-fig-hist-gdp-log" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"gdp_per_worker"</span>, bins<span class="op">=</span><span class="dv">20</span>, log_scale<span class="op">=</span><span class="va">True</span>, ax<span class="op">=</span>ax)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1075,7 +1081,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-fig-hist-hc" class="cell" data-execution_count="8">
+<div id="cell-fig-hist-hc" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"hc"</span>, bins<span class="op">=</span><span class="dv">20</span>, ax<span class="op">=</span>ax)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1096,7 +1102,7 @@ dtype: int64</code></pre>
 <section id="散布図" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="散布図">散布図</h4>
 <p>2変数の関係の向き、外れ値、直線で近似してよさそうかを見ます。</p>
-<div id="cell-fig-scatter-k-y" class="cell" data-execution_count="9">
+<div id="cell-fig-scatter-k-y" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"capital_per_worker"</span>, y<span class="op">=</span><span class="st">"gdp_per_worker"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, ax<span class="op">=</span>ax)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1114,7 +1120,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>両軸を対数にします。</p>
-<div id="cell-fig-scatter-k-y-log" class="cell" data-execution_count="10">
+<div id="cell-fig-scatter-k-y-log" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"capital_per_worker"</span>, y<span class="op">=</span><span class="st">"gdp_per_worker"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, ax<span class="op">=</span>ax)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xscale<span class="op">=</span><span class="st">"log"</span>, yscale<span class="op">=</span><span class="st">"log"</span>)</span>
@@ -1136,7 +1142,7 @@ dtype: int64</code></pre>
 <section id="散布図-回帰直線" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="散布図-回帰直線">散布図 + 回帰直線</h4>
 <p><code>sns.regplot</code> を使うと、散布図に最小二乗の回帰直線を重ねられます。推定する前に「直線で近似してよさそうか」を視覚的に確認できます。</p>
-<div id="cell-fig-regplot" class="cell" data-execution_count="11">
+<div id="cell-fig-regplot" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sns.regplot(</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>np.log(df[<span class="st">"capital_per_worker"</span>]),</span>
@@ -1165,7 +1171,7 @@ dtype: int64</code></pre>
 <section id="ペアプロット" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="ペアプロット">ペアプロット</h4>
 <p>3変数以上の関係を一覧で見たいときに使えます。</p>
-<div id="cell-fig-pairplot" class="cell" data-execution_count="12">
+<div id="cell-fig-pairplot" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sns.pairplot(</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    df.assign(</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        log_gdp_per_worker<span class="op">=</span><span class="kw">lambda</span> d: np.log(d[<span class="st">"gdp_per_worker"</span>]),</span>
@@ -1253,7 +1259,7 @@ dtype: int64</code></pre>
 <section id="単回帰を実行する" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="単回帰を実行する">[7] 単回帰を実行する</h3>
 <p>statsmodels で単回帰を実行します。<code>formula.api</code> を使うと R のような式で書けます。</p>
-<div id="regression" class="cell" data-execution_count="13">
+<div id="regression" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> smf.ols(<span class="st">"np.log(gdp_per_worker) ~ np.log(capital_per_worker)"</span>, data<span class="op">=</span>df).fit()</span>
@@ -1264,8 +1270,8 @@ dtype: int64</code></pre>
 Dep. Variable:     np.log(gdp_per_worker)   R-squared:                       0.850
 Model:                                OLS   Adj. R-squared:                  0.849
 Method:                     Least Squares   F-statistic:                     804.7
-Date:                    Tue, 28 Apr 2026   Prob (F-statistic):           2.29e-60
-Time:                            09:40:07   Log-Likelihood:                -83.647
+Date:                    Fri, 08 May 2026   Prob (F-statistic):           2.29e-60
+Time:                            16:14:19   Log-Likelihood:                -83.647
 No. Observations:                     144   AIC:                             171.3
 Df Residuals:                         142   BIC:                             177.2
 Df Model:                               1                                         
